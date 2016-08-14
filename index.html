@@ -10,28 +10,24 @@
 <body>
 <div class="content">
   <div class="column">
-    <ul>
-      <li>
-        <button onclick="open_in_detail('http://www.yilan.io/')">yilan</button>
-      </li>
-    </ul>
-    <button onclick="onImport()">import opml</button>
-    <ul id="app" style="flex:auto;overflow-y: scroll">
+    <button style="flex:none" onclick="onImport()">import opml</button>
+    <ul id="app" style="flex:1;overflow-y: scroll">
       <li v-for="feed in feeds">
         <a onclick="open_in_list('{{feed.xmlurl}}');return false">{{ feed.title }}</a>
       </li>
     </ul>
-    <ul id="entryList" style="overflow-y: scroll">
+    <ul id="entryList" style="flex:1;overflow-y: scroll">
       <li v-for="entry in entries">
         <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
       </li>
     </ul>
   </div>
-  <webview id="webview" style="flex:auto;display:flex;flex-grow:1;" src="http://www.binbinsoft.com/" autosize="on"
-           minwidth="800" minheight="600"></webview>
+  <div class="column" style="flex-grow:1">
+    <webview id="webview" style="flex:auto;display:flex;flex-grow:1;" src="http://www.binbinsoft.com/" autosize="on"
+             minwidth="800" minheight="600"></webview>
+  </div>
 </div>
 <div class="footer" id="status" name="status">
-  Status Message
 </div>
 <script src="index.js"></script>
 </body>
