@@ -21,7 +21,6 @@ function createWindow() {
 
   // Open the DevTools.
   //   mainWindow.webContents.openDevTools()
-
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
@@ -29,6 +28,7 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+  mainWindow.maximize()
 }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
