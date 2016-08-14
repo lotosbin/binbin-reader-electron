@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello World!</title>
-  <link href="index.css" />
+  <link href="index.css" rel="stylesheet" />
   <script src="index.js"></script>
 </head>
 
-<body style="height:100%">
-  <div style="display:flex;flex-direction:row;height:100%">
+<body>
+  <div class="content">
     <div style="display:flex;">
       <ul>
         <li>
@@ -18,6 +18,9 @@
       </ul>
     </div>
     <webview id="webview" style="display:flex;flex-grow:1;" src="https://www.github.com/" autosize="on" minwidth="800" minheight="600"></webview>
+  </div>
+  <div class="footer" id="status" name="status">
+    Status Message
   </div>
 </body>
 
