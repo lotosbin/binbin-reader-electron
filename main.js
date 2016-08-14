@@ -7,20 +7,20 @@ const BrowserWindow = electron.BrowserWindow
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
-function createWindow () {
+function createWindow() {
   // Create the browser window.
-    mainWindow = new BrowserWindow({
-        width: 400, 
-        height: 600,
-        x:0,
-        y:0,
-    })
+  mainWindow = new BrowserWindow({
+    width: 400,
+    height: 600,
+    x: 0,
+    y: 0,
+  })
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
-//   mainWindow.webContents.openDevTools()
+  //   mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -31,20 +31,20 @@ function createWindow () {
   })
 }
 let detailWindow
-function createDetailWindow () {
-    // Create the browser window.
-    detailWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        x: 400,
-        y: 0
-    })
+function createDetailWindow() {
+  // Create the browser window.
+  detailWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    x: 400,
+    y: 0
+  })
 
   // and load the index.html of the app.
   detailWindow.loadURL(`file://${__dirname}/detail.html`)
 
   // Open the DevTools.
-//   mainWindow.webContents.openDevTools()
+  //   mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   detailWindow.on('closed', function () {
@@ -57,9 +57,9 @@ function createDetailWindow () {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', function(){
-    createWindow()
-    createDetailWindow()
+app.on('ready', function () {
+  createWindow()
+  createDetailWindow()
 })
 
 // Quit when all windows are closed.
@@ -77,8 +77,8 @@ app.on('activate', function () {
   if (mainWindow === null) {
     createWindow()
   }
-  if( detailWindow === null){
-      createDetailWindow()
+  if (detailWindow === null) {
+    createDetailWindow()
   }
 })
 
