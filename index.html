@@ -5,24 +5,29 @@
   <meta charset="UTF-8">
   <title>Hello World!</title>
   <link href="index.css" rel="stylesheet" />
-  <script src="index.js"></script>
 </head>
 
 <body>
   <div class="content">
-    <div>
+    <div class="column">
       <ul>
         <li>
           <button onclick="open_in_detail('http://www.yilan.io/')">yilan</button>
         </li>
       </ul>
       <button onclick="onImport()">import opml</button>
+      <ul id="app" style="overflow-y: scroll">
+        <li v-for="feed in feeds">
+          <a onclick="open_in_detail('{{feed.xmlurl}}');return false">{{ feed.title }}</a>
+        </li>
+      </ul>
     </div>
     <webview id="webview" style="display:flex;flex-grow:1;" src="https://www.github.com/" autosize="on" minwidth="800" minheight="600"></webview>
   </div>
   <div class="footer" id="status" name="status">
     Status Message
   </div>
+  <script src="index.js"></script>
 </body>
 
 </html>

@@ -8,7 +8,14 @@ body {
   display: flex;
   flex-direction: column;
 }
-
+.column{
+  display: flex;
+  flex-direction: column;
+}
+.row{
+  display:flex;
+  flex-direction: row;
+}
 .content {
   display: flex;
   flex-direction: row;
