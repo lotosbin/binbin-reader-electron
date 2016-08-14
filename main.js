@@ -29,6 +29,12 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+  const {ipcMain} = require('electron')
+  ipcMain.on('open_in_detail', (event, arg) => {
+    console.log('open_in_detail:'+arg)
+    // event.sender.send('asynchronous-reply', 'pong')
+    detailWindow.loadURL(arg)
+  })
 }
 let detailWindow
 function createDetailWindow() {
