@@ -1,0 +1,19 @@
+{
+  "name": "binbin-reader-electron",
+  "version": "1.0.0",
+  "description": "electron  reader",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lotosbin/binbin-reader-electron.git"
+  },
+  "author": "lotosbin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lotosbin/binbin-reader-electron/issues"
+  },
+  "homepage": "https://github.com/lotosbin/binbin-reader-electron#readme"
+}
