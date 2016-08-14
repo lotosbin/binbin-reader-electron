@@ -29,43 +29,12 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null
   })
-  const {ipcMain} = require('electron')
-  ipcMain.on('open_in_detail', (event, arg) => {
-    console.log('open_in_detail:'+arg)
-    // event.sender.send('asynchronous-reply', 'pong')
-    detailWindow.loadURL(arg)
-  })
-}
-let detailWindow
-function createDetailWindow() {
-  // Create the browser window.
-  detailWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    x: 400,
-    y: 0
-  })
-
-  // and load the index.html of the app.
-  detailWindow.loadURL(`file://${__dirname}/detail/detail.html`)
-
-  // Open the DevTools.
-  //   mainWindow.webContents.openDevTools()
-
-  // Emitted when the window is closed.
-  detailWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    detailWindow = null
-  })
 }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function () {
   createWindow()
-  createDetailWindow()
 })
 
 // Quit when all windows are closed.
@@ -82,9 +51,6 @@ app.on('activate', function () {
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow()
-  }
-  if (detailWindow === null) {
-    createDetailWindow()
   }
 })
 

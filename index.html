@@ -4,15 +4,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello World!</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+  </style>
 </head>
 
-<body <h1>Hello World!</h1>
-  <!-- All of the Node.js APIs are available in this renderer process. -->
-  We are using node <script>document.write(process.versions.node)</script>, Chromium <script>document.write(process.versions.chrome)</script>,
-  and Electron <script>document.write(process.versions.electron)</script>.
-  <button id="open_in_detail">open in deaitl</button>
+<body style="height:100%">
+  <div style="display:flex;flex-direction:row;height:100%">
+    <div style="display:flex;">
+      <ul>
+        <li>
+          <button onclick="open_in_detail('http://www.yilan.io/')">yilan</button>
+        </li>
+      </ul>
+    </div>
+    <webview id="webview" style="display:flex;flex-grow:1;" src="https://www.github.com/" autosize="on" minwidth="800" minheight="600"></webview>
+  </div>
   <script>
-    require('./renderer.js')
+    function open_in_detail(url) {
+      document.getElementById('webview').src=url
+    }
   </script>
 </body>
 
