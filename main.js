@@ -41,7 +41,7 @@ function createDetailWindow() {
   })
 
   // and load the index.html of the app.
-  detailWindow.loadURL(`file://${__dirname}/detail.html`)
+  detailWindow.loadURL(`file://${__dirname}/detail/detail.html`)
 
   // Open the DevTools.
   //   mainWindow.webContents.openDevTools()
