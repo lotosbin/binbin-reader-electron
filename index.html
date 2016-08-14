@@ -10,12 +10,13 @@
 
 <body>
   <div class="content">
-    <div style="display:flex;">
+    <div>
       <ul>
         <li>
           <button onclick="open_in_detail('http://www.yilan.io/')">yilan</button>
         </li>
       </ul>
+      <button onclick="onImport()">import opml</button>
     </div>
     <webview id="webview" style="display:flex;flex-grow:1;" src="https://www.github.com/" autosize="on" minwidth="800" minheight="600"></webview>
   </div>

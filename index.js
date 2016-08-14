@@ -24,3 +24,20 @@ db.transaction(function (tx) {
     }
   }, null);
 });
+
+var remote = require('electron').remote;
+var dialog = remote.dialog;
+var fs = require('fs');
+var opmlToJSON = require('opml-to-json');
+function onImport() {
+  dialog.showOpenDialog(function (fileNames) {
+    if (fileNames === undefined) return;
+    var fileName = fileNames[0];
+    fs.readFile(fileName, 'utf-8', function (err, data) {
+      console.log(data)
+      opmlToJSON(data,function (err, json ) {
+        console.log(JSON.stringify(json))
+      })
+    });
+  });
+}
