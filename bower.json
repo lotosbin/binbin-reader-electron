@@ -1,0 +1,21 @@
+{
+  "name": "binbin-reader-electron",
+  "description": "electron  reader",
+  "main": "main.js",
+  "authors": [
+    "lotosbin"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/lotosbin/binbin-reader-electron",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.8"
+  }
+}
