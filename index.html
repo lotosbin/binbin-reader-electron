@@ -4,12 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello World!</title>
-  <style>
-    html,
-    body {
-      height: 100%;
-    }
-  </style>
+  <link href="index.css" />
+  <script src="index.js"></script>
 </head>
 
 <body style="height:100%">
@@ -23,11 +19,6 @@
     </div>
     <webview id="webview" style="display:flex;flex-grow:1;" src="https://www.github.com/" autosize="on" minwidth="800" minheight="600"></webview>
   </div>
-  <script>
-    function open_in_detail(url) {
-      document.getElementById('webview').src=url
-    }
-  </script>
 </body>
 
 </html>
