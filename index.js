@@ -76,3 +76,5 @@ function open_in_list(xmlurl) {
       entryVue.UpdateProgress(100)
     })
 }
+
+ 

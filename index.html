@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
 
 <head>
   <meta charset="UTF-8">
@@ -29,6 +29,7 @@
     </div>
   </div>
   <div id="detail" class="column" style="flex-grow:1">
+    <div style="display:flex;justify-content:flex-end"><button v-on:click="OnOpenInBrowser">Open in browser</button></div>
     <progress id="detailProgress" max="100" value="{{progress}}" style="display: flex;width:100%"></progress>
     <webview id="webview" style="flex:auto;display:flex;flex-grow:1;" src="http://www.binbinsoft.com/" autosize="on"
              minwidth="800" minheight="600"></webview>
