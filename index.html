@@ -10,13 +10,17 @@
 <body>
 <div class="content">
   <div class="column" style="flex-grow: 0;flex-basis: 20%;">
-    <button style="flex:none" onclick="onImport()">import opml</button>
-    <ul id="app" style="flex:1;overflow-y: scroll">
-      <li v-for="feed in feeds">
-        <a onclick="open_in_list('{{feed.xmlurl}}');return false">{{ feed.title }}</a>
-      </li>
-    </ul>
-    <div class="column"id="entryList" style="display: flex;flex:1">
+    <div class="column" style="flex:1;">
+      <div class="row" style="justify-content: flex-end">
+        <button style="flex:none" onclick="onImport()">import opml</button>
+      </div>
+      <ul id="app" style="flex:1;overflow-y: scroll">
+        <li v-for="feed in feeds">
+          <a onclick="open_in_list('{{feed.xmlurl}}');return false">{{ feed.title }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="column" id="entryList" style="display: flex;flex:1">
       <progress id="entryListProgress" max="100" value="{{ progress }}" style="display: flex;width:100%"></progress>
       <ul style="flex:1;overflow-y: scroll">
         <li v-for="entry in entries">
@@ -29,7 +33,9 @@
     </div>
   </div>
   <div id="detail" class="column" style="flex-grow:1">
-    <div style="display:flex;justify-content:flex-end"><button v-on:click="OnOpenInBrowser">Open in browser</button></div>
+    <div style="display:flex;justify-content:flex-end">
+      <button v-on:click="OnOpenInBrowser">Open in browser</button>
+    </div>
     <progress id="detailProgress" max="100" value="{{progress}}" style="display: flex;width:100%"></progress>
     <webview id="webview" style="flex:auto;display:flex;flex-grow:1;" src="http://www.binbinsoft.com/" autosize="on"
              minwidth="800" minheight="600"></webview>
