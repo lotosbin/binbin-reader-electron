@@ -1,7 +1,5 @@
-function open_in_detail(url) {
-  document.getElementById('webview').src = url
-}
 
+var detail = require('./components/detail.js')
 var remote = require('electron').remote;
 var dialog = remote.dialog;
 var fs = require('fs');
@@ -48,22 +46,33 @@ UpdateFeeds();
 var entryVue = new Vue({
   el:'#entryList',
   data:{
+    progress:0,
     entries:[]
   },
   methods:{
     UpdateEntries:function (entires) {
       this.entries = entires
+    },
+    UpdateProgress:function (progress) {
+      this.progress = progress
     }
   }
 })
+function open_in_detail(url) {
+  detail.open_in_detail(url)
+}
 var reader = require('feed-reader');
 function open_in_list(xmlurl) {
+  entryVue.UpdateProgress(50)
   reader.parse(xmlurl)
     .then(function (feed) {
+      entryVue.UpdateProgress(80)
       console.log(JSON.stringify(feed))
       entryVue.UpdateEntries(feed.entries)
+      entryVue.UpdateProgress(100)
     })
     .catch(function (error) {
       console.error(JSON.stringify(error))
+      entryVue.UpdateProgress(100)
     })
 }

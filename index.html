@@ -17,12 +17,19 @@
       </li>
     </ul>
     <ul id="entryList" style="flex:1;overflow-y: scroll">
+      <li>
+        <progress id="entryListProgress" max="100" value="{{ progress }}" style="display: flex"></progress>
+      </li>
       <li v-for="entry in entries">
         <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
       </li>
+      <li v-if="!entries.length">
+        暂无内容
+      </li>
     </ul>
   </div>
-  <div class="column" style="flex-grow:1">
+  <div id="detail" class="column" style="flex-grow:1">
+    <progress id="detailProgress" max="100" value="{{progress}}" style="display: flex;width:100%"></progress>
     <webview id="webview" style="flex:auto;display:flex;flex-grow:1;" src="http://www.binbinsoft.com/" autosize="on"
              minwidth="800" minheight="600"></webview>
   </div>
