@@ -1,5 +1,6 @@
 var Vue = require('vue');
 var reader = require('feed-reader');
+var articleStorage = require('../storage/article');
 
 var entryVue = new Vue({
   el: '#entryList',
@@ -16,13 +17,20 @@ var entryVue = new Vue({
     }
   }
 })
+function UpdateList() {
+  articleStorage.Find({}, function (error, results) {
+    console.log(results.rows.length)
+    entryVue.UpdateEntries(results.rows)
+  });
+}
 function open_in_list(xmlurl) {
   entryVue.UpdateProgress(50)
   reader.parse(xmlurl)
     .then(function (feed) {
       entryVue.UpdateProgress(80)
       console.log(JSON.stringify(feed))
-      entryVue.UpdateEntries(feed.entries)
+      articleStorage.AddRange(feed.entries,xmlurl)
+      UpdateList()
       entryVue.UpdateProgress(100)
     })
     .catch(function (error) {
