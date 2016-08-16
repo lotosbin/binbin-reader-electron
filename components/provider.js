@@ -34,12 +34,27 @@ function onImport() {
     });
   });
 }
-function UpdateFeeds() {
+function UpdateFeeds(callback) {
   feedStorage.Find({}, function (error, results) {
     console.log(results.rows.length)
     feedsVue.updateFeeds(results.rows)
+    if (callback)callback(null, results.rows)
   });
 }
+var feedService = require('./feed')
+var _ = require('lodash')
 module.exports = {
-  UpdateFeeds: UpdateFeeds
+  UpdateFeeds: UpdateFeeds,
+  UpdateFeedsArticles: function (callback) {
+    UpdateFeeds(function (error, feeds) {
+      Promise.all(_.map(feeds, (feed)=>new Promise((resolve)=> {
+        feedService.open_in_list(feed.xmlurl, function (error) {
+          resolve({})
+        })
+      })))
+        .then(()=> {
+          if (callback)callback(null)
+        })
+    })
+  }
 }

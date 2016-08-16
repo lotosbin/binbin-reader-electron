@@ -23,7 +23,7 @@ function UpdateList() {
     entryVue.UpdateEntries(results.rows)
   });
 }
-function open_in_list(xmlurl) {
+function open_in_list(xmlurl,callback) {
   entryVue.UpdateProgress(50)
   reader.parse(xmlurl)
     .then(function (feed) {
@@ -32,10 +32,12 @@ function open_in_list(xmlurl) {
       articleStorage.AddRange(feed.entries,xmlurl)
       UpdateList()
       entryVue.UpdateProgress(100)
+      if(callback)callback(null)
     })
     .catch(function (error) {
       console.error(JSON.stringify(error))
       entryVue.UpdateProgress(100)
+      if(callback)callback(error)
     })
 }
 module.exports = {
