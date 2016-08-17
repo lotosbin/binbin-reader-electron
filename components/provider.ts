@@ -3,8 +3,10 @@ var dialog = remote.dialog;
 import * as fs  from 'fs'
 import * as opmlToJSON from 'opml-to-json'
 import * as jsonPath from 'json-path'
-import * as feedStorage from '../storage/feed'
+import feedStorage from '../storage/feed'
 import * as Vue from 'vue'
+import emmiter from './emitter'
+
 var feedsVue = new Vue({
   el: '#app',
   data: {
@@ -13,6 +15,10 @@ var feedsVue = new Vue({
   methods: {
     updateFeeds: function (feeds) {
       this.feeds = feeds
+    },
+    on_open_in_list: function (feed,$event) {
+      $event.preventDefault()
+      emitter.emit('open_in_list', feed)
     }
   }
 })
@@ -24,8 +30,11 @@ function onImport() {
     fs.readFile(fileName, 'utf-8', function (err, data) {
       opmlToJSON(data, function (err, json) {
         var rss = jsonPath.resolve(json, "/children[*]/children[*]")
-        feedStorage.AddRange(rss)
-        UpdateFeeds()
+        feedStorage.AddRange(rss,()=>{
+          
+        })
+        UpdateFeeds(()=> {
+        })
       })
     });
   });
@@ -39,6 +48,7 @@ export function UpdateFeeds(callback) {
 
 import feedService from './feed'
 import * as _ from 'lodash'
+import emitter from "./emitter";
 export function UpdateFeedsArticles(callback) {
   UpdateFeeds(function (error, feeds) {
     Promise.all(_.map(feeds, (feed)=>new Promise((resolve)=> {

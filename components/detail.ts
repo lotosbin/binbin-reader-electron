@@ -3,20 +3,21 @@
  */
 import {shell} from 'electron'
 import * as Vue from 'vue'
+import emitter from "./emitter";
 var vue = new Vue({
   el: '#detail',
   data: {
-    url:'http://www.yuanjingtech.com',
-    progress:0
+    url: 'http://www.yuanjingtech.com',
+    progress: 0
   },
   methods: {
-    UpdateUrl:function (url) {
+    UpdateUrl: function (url) {
       this.url = url
     },
-    UpdateProgress:function (progress) {
+    UpdateProgress: function (progress) {
       this.progress = progress
     },
-    OnOpenInBrowser:function (event) {
+    OnOpenInBrowser: function (event) {
       shell.openExternal(this.url)
     }
   }
@@ -28,7 +29,17 @@ webview.addEventListener('did-start-loading', function () {
 webview.addEventListener('did-stop-loading', function () {
   vue.UpdateProgress(100)
 })
-export function open_in_detail(url) {
+class Detail {
+  Init() {
+    
+  }
+}
+
+emitter.on("open_in_detail", (entry) => {
+  var url = entry.link
   vue.UpdateUrl(url)
   webview.src = url
-}
+});
+var detail = new Detail();
+export default detail
+

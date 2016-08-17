@@ -5,7 +5,7 @@ import emitter from "./emitter"
 import * as Vue from 'vue'
 
 var vm = new Vue({
-  el: '#readhistory',
+  el: '#readHistory',
   data: {
     histories: []
   },
@@ -21,6 +21,10 @@ emitter.on('open_in_detail', (entry) => {
   vm.AddHistory(entry)
 })
 
-export default class {
-  
+class History {
+  Init() {
+
+  }
 }
+var history = new History();
+export default history

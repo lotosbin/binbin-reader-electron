@@ -2,10 +2,10 @@
 /**
  * Created by liubinbin on 16/08/2016.
  */
-var emitter_1 = require("./emitter");
-var Vue = require('vue');
+const emitter_1 = require("./emitter");
+const Vue = require('vue');
 var vm = new Vue({
-    el: '#readhistory',
+    el: '#readHistory',
     data: {
         histories: []
     },
@@ -15,15 +15,15 @@ var vm = new Vue({
         }
     }
 });
-emitter_1.default.on('open_in_detail', function (entry) {
+emitter_1.default.on('open_in_detail', (entry) => {
     console.log('addhistory');
     vm.AddHistory(entry);
 });
-var default_1 = (function () {
-    function default_1() {
+class History {
+    Init() {
     }
-    return default_1;
-}());
+}
+var history = new History();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = default_1;
+exports.default = history;
 //# sourceMappingURL=history.js.map

@@ -1,0 +1,8 @@
+{
+  "globalDependencies": {
+    "github-electron": "registry:dt/github-electron#1.2.5+20160812193136",
+    "lodash": "registry:dt/lodash#4.14.0+20160802150749",
+    "node": "registry:dt/node#6.0.0+20160815222444",
+    "vue": "registry:dt/vue#1.0.21+20160720100422"
+  }
+}

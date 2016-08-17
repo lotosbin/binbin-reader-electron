@@ -2,8 +2,9 @@
 /**
  * Created by liubinbin on 16/08/2016.
  */
-var electron_1 = require('electron');
-var Vue = require('vue');
+const electron_1 = require('electron');
+const Vue = require('vue');
+const emitter_1 = require("./emitter");
 var vue = new Vue({
     el: '#detail',
     data: {
@@ -29,9 +30,16 @@ webview.addEventListener('did-start-loading', function () {
 webview.addEventListener('did-stop-loading', function () {
     vue.UpdateProgress(100);
 });
-function open_in_detail(url) {
+class Detail {
+    Init() {
+    }
+}
+emitter_1.default.on("open_in_detail", (entry) => {
+    var url = entry.link;
     vue.UpdateUrl(url);
     webview.src = url;
-}
-exports.open_in_detail = open_in_detail;
+});
+var detail = new Detail();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = detail;
 //# sourceMappingURL=detail.js.map

@@ -4,6 +4,7 @@
   "description": "electron  reader",
   "main": "main.js",
   "scripts": {
+    "setup":"npm install --global typescript typings",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

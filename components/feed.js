@@ -7,10 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
-var Vue = require('vue');
-var reader = require('feed-reader');
-var articleStorage = require('../storage/article');
-var emitter_1 = require('./emitter');
+const Vue = require('vue');
+const reader = require('feed-reader');
+const article_1 = require('../storage/article');
+const emitter_1 = require('./emitter');
 var entryVue = new Vue({
     el: '#entryList',
     data: {
@@ -25,29 +25,29 @@ var entryVue = new Vue({
             this.progress = progress;
         },
         on_open_in_detail: function (event, entry) {
+            event.preventDefault();
             emitter_1.default.emit('open_in_detail', entry);
             console.log('emit');
         }
     }
 });
-var Feed = (function () {
-    function Feed() {
-    }
-    Feed.prototype.UpdateList = function () {
+class Feed {
+    UpdateList() {
         return __awaiter(this, void 0, void 0, function* () {
-            articleStorage.Find({}, function (error, results) {
+            article_1.default.Find({}, (error, results) => {
                 console.log(results.rows.length);
                 entryVue.UpdateEntries(results.rows);
             });
         });
-    };
-    Feed.prototype.open_in_list = function (xmlurl, callback) {
+    }
+    open_in_list(xmlurl, callback) {
         return __awaiter(this, void 0, void 0, function* () {
             entryVue.UpdateProgress(50);
             try {
-                var feed_1 = yield reader.parse(xmlurl);
+                let feed = yield reader.parse(xmlurl);
                 entryVue.UpdateProgress(80);
-                articleStorage.AddRange(feed_1.entries, xmlurl);
+                article_1.default.AddRange(feed.entries, xmlurl, () => {
+                });
                 yield this.UpdateList();
                 entryVue.UpdateProgress(100);
                 if (callback)
@@ -60,11 +60,14 @@ var Feed = (function () {
                     callback(error);
             }
         });
-    };
-    return Feed;
-}());
+    }
+}
 exports.Feed = Feed;
 var feed = new Feed();
+emitter_1.default.on('open_in_list', (f) => {
+    feed.open_in_list(f.xmlurl, () => {
+    });
+});
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = feed;
 //# sourceMappingURL=feed.js.map

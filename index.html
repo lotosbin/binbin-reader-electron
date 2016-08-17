@@ -16,14 +16,14 @@
       </div>
       <ul id="app" style="flex:1;overflow-y: scroll">
         <li v-for="feed in feeds">
-          <a onclick="open_in_list('{{feed.xmlurl}}');return false">{{ feed.title }}</a>
+          <a v-on:click="on_open_in_list(feed)')">{{ feed.title }}</a>
         </li>
       </ul>
     </div>
-    <div class="column" id="readhistory" style="display:flex;flex:1;">
+    <div class="column" id="readHistory" style="display:flex;flex:1;">
       <ul>
         <li v-for="entry in histories">
-          <a onclick="open_in_detail('{{entry.link}}');return false">{{entry.title}}</a>
+          <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
         </li>
       </ul>
     </div>
