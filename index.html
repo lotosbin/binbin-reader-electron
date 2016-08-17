@@ -10,24 +10,7 @@
 <body>
 <div class="content">
   <div class="column" style="flex-grow: 0;flex-basis: 20%;">
-    <div class="column" style="flex:1;">
-      <div class="row" style="justify-content: flex-end">
-        <button style="flex:none" onclick="onImport()">import opml</button>
-      </div>
-      <ul id="app" style="flex:1;overflow-y: scroll">
-        <li v-for="feed in feeds">
-          <a v-on:click="on_open_in_list(feed)')">{{ feed.title }}</a>
-        </li>
-      </ul>
-    </div>
-    <div class="column" id="readHistory" style="display:flex;flex:1;">
-      <ul>
-        <li v-for="entry in histories" v-bind:style="{list-style-type: entry.readed==1?none:cycle}">
-          <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
-        </li>
-      </ul>
-    </div>
-    <div class="column" id="entryList" style="display: flex;flex:1">
+    <div class="column" id="entryList" style="display: flex;flex:2">
       <progress id="entryListProgress" max="100" value="{{ progress }}" style="display: flex;width:100%"></progress>
       <ul style="flex:1;overflow-y: scroll">
         <li v-for="entry in entries">
@@ -35,6 +18,23 @@
         </li>
         <li v-if="!entries.length">
           暂无内容
+        </li>
+      </ul>
+    </div>
+    <div class="column" id="readHistory" style="display:flex;flex:1;flex-shrink: 1">
+      <ul>
+        <li v-for="entry in histories" v-bind:style="{list-style-type: entry.readed==1?none:cycle}">
+          <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="column" style="display:flex;flex:1;flex-shrink: 1">
+      <div class="row" style="justify-content: flex-end">
+        <button style="flex:none" onclick="onImport()">import opml</button>
+      </div>
+      <ul id="app" style="flex:1;overflow-y: scroll">
+        <li v-for="feed in feeds">
+          <a v-on:click="on_open_in_list(feed)')">{{ feed.title }}</a>
         </li>
       </ul>
     </div>
@@ -47,6 +47,7 @@
     <webview id="webview" style="flex:auto;display:flex;flex-grow:1;" src="http://www.binbinsoft.com/" autosize="on"
              minwidth="800" minheight="600"></webview>
   </div>
+
 </div>
 <div class="footer" id="status" name="status">
 </div>

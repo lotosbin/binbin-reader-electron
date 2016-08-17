@@ -16,7 +16,7 @@ function UpdateFeedsArticles() {
 setInterval(() => {
     UpdateFeedsArticles();
 }, 1000 * 60 * 30); // 30 minus
-UpdateFeedsArticles();
+// UpdateFeedsArticles();
 detail_1.default.Init();
 history_1.default.Init();
 //# sourceMappingURL=index.js.map
