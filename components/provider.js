@@ -52,7 +52,7 @@ const emitter_1 = require("./emitter");
 function UpdateFeedsArticles(callback) {
     UpdateFeeds(function (error, feeds) {
         Promise.all(_.map(feeds, (feed) => new Promise((resolve) => {
-            feed_2.default.open_in_list(feed.xmlurl, function (error) {
+            feed_2.default.GrabAndUpdateArticles(feed.xmlurl, function (error) {
                 resolve({});
             });
         })))

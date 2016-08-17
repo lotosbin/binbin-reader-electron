@@ -52,7 +52,7 @@ import emitter from "./emitter";
 export function UpdateFeedsArticles(callback) {
   UpdateFeeds(function (error, feeds) {
     Promise.all(_.map(feeds, (feed)=>new Promise((resolve)=> {
-      feedService.open_in_list(feed.xmlurl, function (error) {
+      feedService.GrabAndUpdateArticles(feed.xmlurl, function (error) {
         resolve({})
       })
     })))

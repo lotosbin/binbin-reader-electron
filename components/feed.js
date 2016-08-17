@@ -44,10 +44,9 @@ class Feed {
         return __awaiter(this, void 0, void 0, function* () {
             entryVue.UpdateProgress(50);
             try {
-                let feed = yield reader.parse(xmlurl);
-                entryVue.UpdateProgress(80);
-                article_1.default.AddRange(feed.entries, xmlurl, () => {
+                this.GrabAndUpdateArticles(xmlurl, () => {
                 });
+                entryVue.UpdateProgress(80);
                 yield this.UpdateList();
                 entryVue.UpdateProgress(100);
                 if (callback)
@@ -59,6 +58,15 @@ class Feed {
                 if (callback)
                     callback(error);
             }
+        });
+    }
+    GrabAndUpdateArticles(xmlurl, callback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let feed = yield reader.parse(xmlurl);
+            article_1.default.AddRange(feed.entries, xmlurl, () => {
+            });
+            if (callback)
+                callback();
         });
     }
 }

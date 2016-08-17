@@ -34,10 +34,9 @@ export class Feed {
   async open_in_list(xmlurl, callback) {
     entryVue.UpdateProgress(50)
     try {
-      let feed = await reader.parse(xmlurl)
+      this.GrabAndUpdateArticles(xmlurl, ()=> {
+      });
       entryVue.UpdateProgress(80)
-      articleStorage.AddRange(feed.entries, xmlurl, ()=> {
-      })
       await this.UpdateList()
       entryVue.UpdateProgress(100)
       if (callback)callback(null)
@@ -47,13 +46,20 @@ export class Feed {
       if (callback)callback(error)
     }
   }
+
+  async GrabAndUpdateArticles(xmlurl, callback) {
+    let feed = await reader.parse(xmlurl)
+    articleStorage.AddRange(feed.entries, xmlurl, ()=> {
+    })
+    if (callback)callback();
+  }
 }
 var feed = new Feed()
 emitter.on('open_in_list', (f)=> {
   feed.open_in_list(f.xmlurl, ()=> {
   })
 })
-emitter.on('refresh_list',(f)=>{
+emitter.on('refresh_list', (f)=> {
   feed.UpdateList()
 })
 export default feed
