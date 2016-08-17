@@ -53,4 +53,7 @@ emitter.on('open_in_list', (f)=> {
   feed.open_in_list(f.xmlurl, ()=> {
   })
 })
+emitter.on('refresh_list',(f)=>{
+  feed.UpdateList()
+})
 export default feed

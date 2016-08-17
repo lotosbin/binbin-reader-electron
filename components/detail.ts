@@ -4,6 +4,7 @@
 import {shell} from 'electron'
 import * as Vue from 'vue'
 import emitter from "./emitter";
+import articleStorage from '../storage/article'
 var vue = new Vue({
   el: '#detail',
   data: {
@@ -19,6 +20,10 @@ var vue = new Vue({
     },
     OnOpenInBrowser: function (event) {
       shell.openExternal(this.url)
+    },
+    MarkReaded: function () {
+      articleStorage.Read({id: this.url}, ()=> {
+      })
     }
   }
 })
@@ -28,10 +33,12 @@ webview.addEventListener('did-start-loading', function () {
 })
 webview.addEventListener('did-stop-loading', function () {
   vue.UpdateProgress(100)
+  vue.MarkReaded()
+  emitter.emit('refresh_list', {})
 })
 class Detail {
   Init() {
-    
+
   }
 }
 

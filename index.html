@@ -22,7 +22,7 @@
     </div>
     <div class="column" id="readHistory" style="display:flex;flex:1;">
       <ul>
-        <li v-for="entry in histories">
+        <li v-for="entry in histories" v-bind:style="{list-style-type: entry.readed==1?none:cycle}">
           <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
         </li>
       </ul>

@@ -5,6 +5,7 @@
 const electron_1 = require('electron');
 const Vue = require('vue');
 const emitter_1 = require("./emitter");
+const article_1 = require('../storage/article');
 var vue = new Vue({
     el: '#detail',
     data: {
@@ -20,6 +21,10 @@ var vue = new Vue({
         },
         OnOpenInBrowser: function (event) {
             electron_1.shell.openExternal(this.url);
+        },
+        MarkReaded: function () {
+            article_1.default.Read({ id: this.url }, () => {
+            });
         }
     }
 });
@@ -29,6 +34,8 @@ webview.addEventListener('did-start-loading', function () {
 });
 webview.addEventListener('did-stop-loading', function () {
     vue.UpdateProgress(100);
+    vue.MarkReaded();
+    emitter_1.default.emit('refresh_list', {});
 });
 class Detail {
     Init() {

@@ -3,12 +3,23 @@
  * Created by liubinbin on 15/08/2016.
  */
 const _ = require('lodash');
+const ArticleTableName = "ARTICLES3";
 class ArticleStorage {
     Add({ title, link, feed_xmlurl }, callback) {
         var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
         var msg;
         db.transaction(function (tx) {
-            tx.executeSql('INSERT INTO ARTICLES2 (id, title,link,feed_xmlurl) VALUES (? ,?,?,?)', [link, title, link, feed_xmlurl], function (transaction, results) {
+            tx.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed) VALUES (? ,?,?,?,?)`, [link, title, link, feed_xmlurl, 0], function (transaction, results) {
+            }, function (transation, error) {
+                console.log(error);
+            });
+        });
+    }
+    Read({ id }, callback) {
+        var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
+        var msg;
+        db.transaction(function (tx) {
+            tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], function (transaction, results) {
             }, function (transation, error) {
                 console.log(error);
             });
@@ -18,7 +29,7 @@ class ArticleStorage {
         var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
         var msg;
         db.transaction(function (tx) {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS ARTICLES2 (id UNIQUE, title, link, feed_xmlurl)');
+            tx.executeSql(`CREATE TABLE IF NOT EXISTS ${ArticleTableName} (id UNIQUE, title, link, feed_xmlurl,readed)`);
             msg = '<p>created </p>';
             console.log(msg);
         });
@@ -33,7 +44,7 @@ class ArticleStorage {
         var db = openDatabase('mydb', '1.0', 'Test DB', 2 * 1024 * 1024);
         var msg;
         db.transaction(function (tx) {
-            tx.executeSql('SELECT * FROM ARTICLES2 ORDER BY rowid DESC ', [], function (tx, results) {
+            tx.executeSql(`SELECT * FROM ${ArticleTableName}  ORDER BY readed,rowid DESC LIMIT 100`, [], function (tx, results) {
                 callback(null, results);
             }, null);
         });

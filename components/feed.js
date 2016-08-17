@@ -68,6 +68,9 @@ emitter_1.default.on('open_in_list', (f) => {
     feed.open_in_list(f.xmlurl, () => {
     });
 });
+emitter_1.default.on('refresh_list', (f) => {
+    feed.UpdateList();
+});
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = feed;
 //# sourceMappingURL=feed.js.map
