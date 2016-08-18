@@ -28,13 +28,13 @@
         </li>
       </ul>
     </div>
-    <div class="column" style="display:flex;flex:1;flex-shrink: 1">
+    <div class="column"id="app" s style="display:flex;flex:1;flex-shrink: 1">
       <div class="row" style="justify-content: flex-end">
-        <button style="flex:none" onclick="onImport()">import opml</button>
+        <button style="flex:none" v-on:click="onImport()">import opml</button>
       </div>
-      <ul id="app" style="flex:1;overflow-y: scroll">
+      <ul tyle="flex:1;overflow-y: scroll">
         <li v-for="feed in feeds">
-          <a v-on:click="on_open_in_list(feed)')">{{ feed.title }}</a>
+          <a v-on:click="on_open_in_list(feed,$event)')">{{ feed.title }}</a>
         </li>
       </ul>
     </div>

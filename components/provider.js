@@ -6,6 +6,9 @@ const opmlToJSON = require('opml-to-json');
 const jsonPath = require('json-path');
 const feed_1 = require('../storage/feed');
 const Vue = require('vue');
+const feed_2 = require('./feed');
+const _ = require('lodash');
+const emitter_1 = require("./emitter");
 var feedsVue = new Vue({
     el: '#app',
     data: {
@@ -18,49 +21,49 @@ var feedsVue = new Vue({
         on_open_in_list: function (feed, $event) {
             $event.preventDefault();
             emitter_1.default.emit('open_in_list', feed);
+        },
+        onImport: function () {
+            dialog.showOpenDialog(function (fileNames) {
+                if (fileNames === undefined)
+                    return;
+                var fileName = fileNames[0];
+                fs.readFile(fileName, 'utf-8', function (err, data) {
+                    opmlToJSON(data, function (err, json) {
+                        var rss = jsonPath.resolve(json, "/children[*]/children[*]");
+                        feed_1.default.AddRange(rss, () => {
+                        });
+                        provider.UpdateFeeds(() => {
+                        });
+                    });
+                });
+            });
         }
     }
 });
 feed_1.default.Init();
-function onImport() {
-    dialog.showOpenDialog(function (fileNames) {
-        if (fileNames === undefined)
-            return;
-        var fileName = fileNames[0];
-        fs.readFile(fileName, 'utf-8', function (err, data) {
-            opmlToJSON(data, function (err, json) {
-                var rss = jsonPath.resolve(json, "/children[*]/children[*]");
-                feed_1.default.AddRange(rss, () => {
-                });
-                UpdateFeeds(() => {
-                });
-            });
-        });
-    });
-}
-function UpdateFeeds(callback) {
-    feed_1.default.Find({}, function (error, results) {
-        feedsVue.updateFeeds(results.rows);
-        if (callback)
-            callback(null, results.rows);
-    });
-}
-exports.UpdateFeeds = UpdateFeeds;
-const feed_2 = require('./feed');
-const _ = require('lodash');
-const emitter_1 = require("./emitter");
-function UpdateFeedsArticles(callback) {
-    UpdateFeeds(function (error, feeds) {
-        Promise.all(_.map(feeds, (feed) => new Promise((resolve) => {
-            feed_2.default.GrabAndUpdateArticles(feed.xmlurl, function (error) {
-                resolve({});
-            });
-        })))
-            .then(() => {
+class Provider {
+    UpdateFeeds(callback) {
+        feed_1.default.Find({}, function (error, results) {
+            feedsVue.updateFeeds(results.rows);
             if (callback)
-                callback(null);
+                callback(null, results.rows);
         });
-    });
+    }
+    UpdateFeedsArticles(callback) {
+        this.UpdateFeeds(function (error, feeds) {
+            Promise.all(_.map(feeds, (feed) => new Promise((resolve) => {
+                feed_2.default.GrabAndUpdateArticles(feed.xmlurl, function (error) {
+                    resolve({});
+                });
+            })))
+                .then(() => {
+                if (callback)
+                    callback(null);
+            });
+        });
+    }
 }
-exports.UpdateFeedsArticles = UpdateFeedsArticles;
+var provider = new Provider();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = provider;
 //# sourceMappingURL=provider.js.map

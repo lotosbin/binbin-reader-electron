@@ -2,7 +2,7 @@ import detail from "./components/detail";
 import emitter from "./components/emitter";
 import feed from "./components/feed";
 import history from "./components/history";
-import * as provider from "./components/provider";
+import provider from "./components/provider";
 provider.UpdateFeeds(() => {
 });
 let updating = false;
@@ -18,7 +18,7 @@ function UpdateFeedsArticles() {
 setInterval(() => {
   UpdateFeedsArticles();
 }, 1000 * 60 * 30); // 30 minus
-// UpdateFeedsArticles();
+UpdateFeedsArticles();
 
 detail.Init()
 history.Init()

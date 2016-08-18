@@ -1,14 +1,14 @@
 "use strict";
 const detail_1 = require("./components/detail");
 const history_1 = require("./components/history");
-const provider = require("./components/provider");
-provider.UpdateFeeds(() => {
+const provider_1 = require("./components/provider");
+provider_1.default.UpdateFeeds(() => {
 });
 let updating = false;
 function UpdateFeedsArticles() {
     if (!updating) {
         updating = true;
-        provider.UpdateFeedsArticles(() => {
+        provider_1.default.UpdateFeedsArticles(() => {
             updating = false;
         });
     }
@@ -16,7 +16,7 @@ function UpdateFeedsArticles() {
 setInterval(() => {
     UpdateFeedsArticles();
 }, 1000 * 60 * 30); // 30 minus
-// UpdateFeedsArticles();
+UpdateFeedsArticles();
 detail_1.default.Init();
 history_1.default.Init();
 //# sourceMappingURL=index.js.map

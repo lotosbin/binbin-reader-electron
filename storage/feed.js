@@ -24,7 +24,7 @@ class FeedStorage {
         });
     }
     AddRange(items, callback) {
-        _(items).forEach(function (value) {
+        _(items).forEach((value) => {
             this.Add({ title: value.title, xmlurl: value.xmlurl }, () => {
             });
         });
