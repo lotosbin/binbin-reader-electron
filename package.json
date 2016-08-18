@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "setup": "npm install --global typescript tslint typings",
+    "postinstall": "./node_modules/.bin/electron-rebuild",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
