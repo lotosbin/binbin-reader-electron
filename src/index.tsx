@@ -14,7 +14,10 @@ ReactDOM.render(
     <TopBar />
   </MuiThemeProvider>
   , document.getElementById("topbar"));
-
+ReactDOM.render(
+  <div>    <a href="https://github.com/lotosbin/binbin-reader-electron" target="_blank">GitHub</a></div>
+  , document.getElementById("status")
+);
 import detail from "./components/detail";
 import feed from "./components/feed";
 import history from "./components/history";
