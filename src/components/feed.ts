@@ -2,6 +2,7 @@ import  * as Vue from 'vue'
 import  * as reader from 'feed-reader'
 import articleStorage from '../storage/article'
 import emitter from './emitter'
+import {IArticle} from "../../definitions/storage/article";
 var entryVue = new Vue({
   el: '#entryList',
   data: {
@@ -12,10 +13,10 @@ var entryVue = new Vue({
     UpdateEntries: function (entires) {
       this.entries = entires
     },
-    UpdateProgress: function (progress) {
+    UpdateProgress: function (progress: number) {
       this.progress = progress
     },
-    on_open_in_detail: function (entry) {
+    on_open_in_detail: function (entry: IArticle) {
       emitter.emit('open_in_detail', entry)
       console.log('emit')
     }
@@ -46,7 +47,7 @@ export class Feed {
     }
   }
 
-  async GrabAndUpdateArticles(xmlurl, callback) {
+  async GrabAndUpdateArticles(xmlurl: string, callback) {
     let feed = await reader.parse(xmlurl)
     articleStorage.AddRange(feed.entries, xmlurl, ()=> {
     })

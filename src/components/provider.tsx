@@ -1,3 +1,4 @@
+import * as React from "react";
 import {remote}  from "electron";
 let dialog = remote.dialog;
 import * as fs  from "fs";
@@ -8,6 +9,10 @@ import feedService from "./feed";
 import * as Vue from "vue";
 import * as _ from "lodash";
 import emitter from "./emitter";
+import {Drawer} from "material-ui";
+import {List} from "material-ui";
+import {ListItem} from "material-ui";
+import {IFeed} from "../../definitions/storage/feed";
 
 
 let feedsVue = new Vue({
@@ -18,9 +23,6 @@ let feedsVue = new Vue({
   methods: {
     updateFeeds: function (feeds) {
       this.feeds = feeds;
-    },
-    on_open_in_list: function (feed){
-      emitter.emit("open_in_list", feed);
     },
     onImport: function () {
       dialog.showOpenDialog(function (fileNames) {
@@ -60,6 +62,61 @@ class Provider {
           if (callback)callback(null);
         });
     });
+  }
+}
+export interface ProviderProps {
+
+}
+export interface ProviderState {
+  open: boolean,
+  data: IFeed[]
+}
+export class ProviderReact extends React.Component<ProviderProps,{}> {
+  state: ProviderState = {
+    open: false,
+    data: []
+  }
+
+  componentWillMount() {
+    emitter.on('on_show_provider_list', ()=> {
+      this.setState({
+        open: true,
+      })
+    })
+    feedStorage.Find({}, (error, results: any[]) => {
+      var d: IFeed[] = [];
+      for (var i = 0; i < results.rows.length; i++) {
+        d.push(results.rows.item(i))
+      }
+      this.setState({
+        data: d
+      })
+    });
+  }
+
+  onOpenInList(feed: IFeed) {
+    emitter.emit('open_in_list', feed)
+  }
+
+  listItem = (feed: IFeed)=> {
+    return <ListItem key={feed.id} primaryText={feed.title} onClick={this.onOpenInList(feed)}/>
+  }
+
+  render() {
+    return (
+      <div>
+        <Drawer
+          docked={false}
+          width={200}
+          open={this.state.open}
+          onRequestChange={(open) => this.setState({open})}
+        >
+          <List>
+            {this.state.data.map(this.listItem)}
+          </List>
+        </Drawer>
+      </div>
+    );
   }
 }
 let provider = new Provider();

@@ -1,3 +1,8 @@
+import detail from "./components/detail";
+import feed from "./components/feed";
+import history from "./components/history";
+import provider from "./components/provider";
+import {ProviderReact} from "./components/provider";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {TopBar} from "./components/topbar"
@@ -35,10 +40,13 @@ var detailProgress = (
   </MuiThemeProvider>
 );
 ReactDOM.render(detailProgress, document.getElementById("detailProgress"));
-import detail from "./components/detail";
-import feed from "./components/feed";
-import history from "./components/history";
-import provider from "./components/provider";
+var providerList = (
+  <MuiThemeProvider>
+    <ProviderReact></ProviderReact>
+  </MuiThemeProvider>
+
+);
+// ReactDOM.render(providerList, document.getElementById("providerList"));
 provider.UpdateFeeds(() => {
 });
 let updating = false;
