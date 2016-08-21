@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import {TopBar} from "./components/topbar"
 import * as injectTapEventPlugin from "react-tap-event-plugin";
 import {BottomNavigationExampleSimple as BottomNavigation} from "./components/bottomnav"
-import {DetailToolBar} from "./components/detail"
+import {DetailToolBar, DetailProgress} from "./components/detail"
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
@@ -29,7 +29,12 @@ var detailToolBar = (
   </MuiThemeProvider>
 );
 ReactDOM.render(detailToolBar, document.getElementById("detailToolBar"));
-
+var detailProgress = (
+  <MuiThemeProvider>
+    <DetailProgress></DetailProgress>
+  </MuiThemeProvider>
+);
+ReactDOM.render(detailProgress, document.getElementById("detailProgress"));
 import detail from "./components/detail";
 import feed from "./components/feed";
 import history from "./components/history";

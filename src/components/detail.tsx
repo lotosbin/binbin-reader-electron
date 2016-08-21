@@ -31,10 +31,12 @@ var vue = new Vue({
 var webview = document.getElementById('webview');
 webview.addEventListener('did-start-loading', function () {
   vue.UpdateProgress(20)
+  emitter.emit('detail:did-start-loading')
 })
 webview.addEventListener('did-stop-loading', function () {
   vue.UpdateProgress(100)
   vue.MarkReaded()
+  emitter.emit('detail:did-stop-loading')
   emitter.emit('refresh_list', {})
 })
 
@@ -54,6 +56,7 @@ export class Detail extends React.Component<DetailProps,{}> {
 }
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
+import LinearProgress from 'material-ui/LinearProgress';
 
 
 export interface DetailToolBarProps {
@@ -77,5 +80,35 @@ export class DetailToolBar extends React.Component<DetailToolBarProps,{}> {
     );
   }
 }
+export interface DetailProgressProps {
+
+}
+export class DetailProgress extends React.Component<DetailProgressProps,{}> {
+  state = {
+    value: 0
+  }
+
+  componentWillMount() {
+    emitter.on('detail:did-start-loading', ()=> {
+      this.setState({
+        value: 20
+      })
+    })
+    emitter.on('detail:did-stop-loading', ()=> {
+      this.setState({
+        value: 100
+      })
+    })
+  }
+
+  render() {
+    return (
+      <LinearProgress
+        mode="determinate"
+        value={this.state.value}/>
+    );
+  }
+}
+
 var detail = new Detail();
 export default detail
