@@ -8,6 +8,9 @@ body {
   display: flex;
   flex-direction: column;
 }
+body{
+  font-family: 'Roboto', sans-serif;
+}
 .column{
   display: flex;
   flex-direction: column;
@@ -30,4 +33,6 @@ body {
 ul {
   list-style-type: circle;
 }
-
+h1,h2,h3,h4{
+  font-family: 'Roboto', sans-serif;
+}
