@@ -7,10 +7,12 @@ import  {
 import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
 
-const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
+const recentsIcon = <FontIcon className="material-icons">GitHub</FontIcon>;
 const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
 const nearbyIcon = <IconLocationOn />;
-export interface BottomNavigationExampleSimple {
+import {shell} from 'electron'
+
+export interface BottomNavigationExampleSimpleProps {
 
 }
 /**
@@ -18,7 +20,7 @@ export interface BottomNavigationExampleSimple {
  * provided. The selected `BottomNavigationItem` is determined by application
  * state (for instance, by the URL).
  */
-export class BottomNavigationExampleSimple extends Component<BottomNavigationExampleSimple,{}> {
+export class BottomNavigationExampleSimple extends Component<BottomNavigationExampleSimpleProps,{}> {
   state = {
     selectedIndex: 0,
   };
@@ -28,19 +30,12 @@ export class BottomNavigationExampleSimple extends Component<BottomNavigationExa
       <Paper zDepth={1}>
         <BottomNavigation selectedIndex={this.state.selectedIndex}>
           <BottomNavigationItem
-            label="Recents"
+            label=""
             icon={recentsIcon}
-            onTouchTap={() => this.select(0)}
-          />
-          <BottomNavigationItem
-            label="Favorites"
-            icon={favoritesIcon}
-            onTouchTap={() => this.select(1)}
-          />
-          <BottomNavigationItem
-            label="Nearby"
-            icon={nearbyIcon}
-            onTouchTap={() => this.select(2)}
+            onTouchTap={() => {
+              this.select(0)
+              shell.openExternal("https://github.com/lotosbin/binbin-reader-electron")
+            }}
           />
         </BottomNavigation>
       </Paper>
