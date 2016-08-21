@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom";
 import {TopBar} from "./components/topbar"
 import * as injectTapEventPlugin from "react-tap-event-plugin";
 import {BottomNavigationExampleSimple as BottomNavigation} from "./components/bottomnav"
+import {DetailToolBar} from "./components/detail"
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
@@ -22,6 +23,13 @@ var bottomNavigation =
     <BottomNavigation></BottomNavigation>
   </MuiThemeProvider>;
 ReactDOM.render(bottomNavigation, document.getElementById("status"));
+var detailToolBar = (
+  <MuiThemeProvider>
+    <DetailToolBar></DetailToolBar>
+  </MuiThemeProvider>
+);
+ReactDOM.render(detailToolBar, document.getElementById("detailToolBar"));
+
 import detail from "./components/detail";
 import feed from "./components/feed";
 import history from "./components/history";

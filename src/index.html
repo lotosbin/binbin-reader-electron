@@ -17,7 +17,7 @@
         <progress id="entryListProgress" max="100" value="{{ progress }}" style="display: flex;width:100%"></progress>
         <ul style="flex:1;overflow-y: scroll">
           <li v-for="entry in entries">
-            <a v-on:click="on_open_in_detail($event,entry)">{{ entry.title }}</a>
+            <a v-on:click="on_open_in_detail(entry)">{{ entry.title }}</a>
           </li>
           <li v-if="!entries.length">
             暂无内容
@@ -26,7 +26,7 @@
       </div>
       <div class="column" id="readHistory" style="display:flex;flex:1;">
         <ul  class="column" style="flex:1;overflow-y: scroll">
-          <li v-for="entry in histories" v-bind:style="{list-style-type: entry.readed==1?none:cycle}">
+          <li v-for="entry in histories">
             <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
           </li>
         </ul>
@@ -43,9 +43,7 @@
       </div>
     </div>
     <div id="detail" class="column" style="flex:1">
-      <div style="display:flex;justify-content:flex-end">
-        <button v-on:click="OnOpenInBrowser">Open in browser</button>
-      </div>
+      <div id="detailToolBar"></div>
       <progress id="detailProgress" max="100" value="{{progress}}" style="display: flex;width:100%"></progress>
       <webview id="webview" style="flex:auto;display:flex;" src="http://www.binbinsoft.com/" autosize="on" minwidth="800" minheight="600"></webview>
     </div>

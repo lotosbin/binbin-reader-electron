@@ -15,8 +15,7 @@ var entryVue = new Vue({
     UpdateProgress: function (progress) {
       this.progress = progress
     },
-    on_open_in_detail: function (event, entry) {
-      event.preventDefault()
+    on_open_in_detail: function (entry) {
       emitter.emit('open_in_detail', entry)
       console.log('emit')
     }
