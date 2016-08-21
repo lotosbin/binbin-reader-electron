@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
+    "rootDir": "src",
+    "outDir": "dist",
     "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
@@ -17,9 +18,10 @@
   // ],
   "exclude": [
     "node_modules",
-    "dist",
     ".git",
     ".idea",
-    ".vscode"
+    ".vscode",
+    "dist",
+    "build"
   ]
 }

@@ -1,4 +1,8 @@
 "use strict";
+// ReactDOM.render(
+//     <Hello compiler="TypeScript" framework="React" />,
+//     document.getElementById("example")
+// );
 const detail_1 = require("./components/detail");
 const history_1 = require("./components/history");
 const provider_1 = require("./components/provider");

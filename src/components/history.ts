@@ -15,7 +15,6 @@ var vm = new Vue({
     }
   }
 })
-
 emitter.on('open_in_detail', (entry) => {
   console.log('addhistory')
   vm.AddHistory(entry)

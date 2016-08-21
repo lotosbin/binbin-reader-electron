@@ -1,7 +1,7 @@
 "use strict";
-const detail_1 = require("./components/detail");
-const history_1 = require("./components/history");
-const provider_1 = require("./components/provider");
+const detail_1 = require("./src/components/detail");
+const history_1 = require("./src/components/history");
+const provider_1 = require("./src/components/provider");
 provider_1.default.UpdateFeeds(() => {
 });
 let updating = false;

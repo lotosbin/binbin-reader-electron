@@ -12,10 +12,10 @@ var vue = new Vue({
     progress: 0
   },
   methods: {
-    UpdateUrl: function (url) {
+    UpdateUrl: function (url:string) {
       this.url = url
     },
-    UpdateProgress: function (progress) {
+    UpdateProgress: function (progress:number) {
       this.progress = progress
     },
     OnOpenInBrowser: function (event) {
