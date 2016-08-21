@@ -4,55 +4,57 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello World!</title>
-  <link href="index.css" rel="stylesheet"/>
+  <link href="index.css" rel="stylesheet" />
 </head>
 
 <body>
-<div class="content">
-  <div class="column" style="flex-grow: 0;flex-basis: 20%;">
-    <div class="column" id="entryList" style="display: flex;flex:2">
-      <progress id="entryListProgress" max="100" value="{{ progress }}" style="display: flex;width:100%"></progress>
-      <ul style="flex:1;overflow-y: scroll">
-        <li v-for="entry in entries">
-          <a v-on:click="on_open_in_detail($event,entry)">{{ entry.title }}</a>
-        </li>
-        <li v-if="!entries.length">
-          暂无内容
-        </li>
-      </ul>
-    </div>
-    <div class="column" id="readHistory" style="display:flex;flex:1;flex-shrink: 1">
-      <ul>
-        <li v-for="entry in histories" v-bind:style="{list-style-type: entry.readed==1?none:cycle}">
-          <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
-        </li>
-      </ul>
-    </div>
-    <div class="column"id="app" s style="display:flex;flex:1;flex-shrink: 1">
-      <div class="row" style="justify-content: flex-end">
-        <button style="flex:none" v-on:click="onImport()">import opml</button>
+  <div class="content">
+    <div class="column" style="flex-grow: 0;flex-basis: 20%;">
+      <div class="column" id="entryList" style="display: flex;flex:2">
+        <progress id="entryListProgress" max="100" value="{{ progress }}" style="display: flex;width:100%"></progress>
+        <ul style="flex:1;overflow-y: scroll">
+          <li v-for="entry in entries">
+            <a v-on:click="on_open_in_detail(entry)">{{ entry.title }}</a>
+          </li>
+          <li v-if="!entries.length">
+            暂无内容
+          </li>
+        </ul>
       </div>
-      <ul tyle="flex:1;overflow-y: scroll">
-        <li v-for="feed in feeds">
-          <a v-on:click="on_open_in_list(feed,$event)')">{{ feed.title }}</a>
-        </li>
-      </ul>
+      <div class="column" id="readHistory" style="display:flex;flex:1;">
+        <ul>
+          <li v-for="entry in histories" v-bind:style="{list-style-type: entry.readed==1?none:cycle}">
+            <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
+          </li>
+        </ul>
+      </div>
+      <div class="column" id="app" s style="display:flex;flex:1;">
+        <div class="row" style="justify-content: flex-end">
+          <button style="flex:none" v-on:click="onImport()">import opml</button>
+        </div>
+        <ul  class="column" style="flex:1;overflow-y: scroll">
+          <li v-for="feed in feeds">
+            <a v-on:click="on_open_in_list(feed)">{{ feed.title }}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div id="detail" class="column" style="flex:1">
+      <div style="display:flex;justify-content:flex-end">
+        <button v-on:click="OnOpenInBrowser">Open in browser</button>
+      </div>
+      <progress id="detailProgress" max="100" value="{{progress}}" style="display: flex;width:100%"></progress>
+      <webview id="webview" style="flex:auto;display:flex;" src="http://www.binbinsoft.com/" autosize="on" minwidth="800" minheight="600"></webview>
     </div>
   </div>
-  <div id="detail" class="column" style="flex-grow:1">
-    <div style="display:flex;justify-content:flex-end">
-      <button v-on:click="OnOpenInBrowser">Open in browser</button>
-    </div>
-    <progress id="detailProgress" max="100" value="{{progress}}" style="display: flex;width:100%"></progress>
-    <webview id="webview" style="flex:auto;display:flex;flex-grow:1;" src="http://www.binbinsoft.com/" autosize="on"
-             minwidth="800" minheight="600"></webview>
+  <div class="footer" id="status" name="status"> 
+    <a href="https://github.com/lotosbin/binbin-reader-electron" target="_blank">GitHub</a>
+    <div id="example"></div>
   </div>
+  <script src="index.js"></script>
 
-</div>
-<div class="footer" id="status" name="status">
-  <a  href="https://github.com/lotosbin/binbin-reader-electron" target="_blank">GitHub</a>
-</div>
-<script src="index.js"></script>
+  <script src="./node_modules/react/dist/react.min.js"></script>
+  <script src="./node_modules/react-dom/dist/react-dom.min.js"></script>
+  <script src="./dist/bundle.js"></script>
 </body>
-
 </html>

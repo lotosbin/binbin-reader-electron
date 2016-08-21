@@ -18,7 +18,7 @@ function UpdateFeedsArticles() {
 setInterval(() => {
   UpdateFeedsArticles();
 }, 1000 * 60 * 30); // 30 minus
-UpdateFeedsArticles();
+// UpdateFeedsArticles();
 
 detail.Init()
 history.Init()

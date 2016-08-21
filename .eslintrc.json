@@ -8,6 +8,9 @@
     "parserOptions": {
         "sourceType": "module"
     },
+    "ignore": [
+      "dist/**/*"
+    ],
     "rules": {
         "indent": [
             "error",

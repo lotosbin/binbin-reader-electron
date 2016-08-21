@@ -3,6 +3,8 @@
     "github-electron": "registry:dt/github-electron#1.2.5+20160812193136",
     "lodash": "registry:dt/lodash#4.14.0+20160802150749",
     "node": "registry:dt/node#6.0.0+20160815222444",
+    "react": "registry:dt/react#0.14.0+20160817201227",
+    "react-dom": "registry:dt/react-dom#0.14.0+20160412154040",
     "vue": "registry:dt/vue#1.0.21+20160720100422"
   }
 }

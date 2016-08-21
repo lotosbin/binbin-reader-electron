@@ -1,9 +1,25 @@
 {
   "compilerOptions": {
+    "outDir": "./dist/",
     "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
     "moduleResolution": "node",
-    "watch": true
-  }
+    "noImplicitAny": true,
+    "watch": true,
+    "jsx": "react"
+  },
+  // "files": [
+  //   "./typings/index.d.ts",
+  //   "./components/*.ts",
+  //   "./src/components/*.tsx",
+  //   "./src/index.tsx"
+  // ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".git",
+    ".idea",
+    ".vscode"
+  ]
 }

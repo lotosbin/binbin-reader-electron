@@ -24,6 +24,7 @@ body {
 
 .footer {
   display: flex;
+  flex-direction: row;
   flex: none;
 }
 ul {

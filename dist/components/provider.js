@@ -1,34 +1,34 @@
 "use strict";
-const electron_1 = require('electron');
-var dialog = electron_1.remote.dialog;
-const fs = require('fs');
-const opmlToJSON = require('opml-to-json');
-const jsonPath = require('json-path');
-const feed_1 = require('../storage/feed');
-const Vue = require('vue');
-const feed_2 = require('./feed');
-const _ = require('lodash');
+const electron_1 = require("electron");
+let dialog = electron_1.remote.dialog;
+const fs = require("fs");
+const opmlToJSON = require("opml-to-json");
+const jsonPath = require("json-path");
+const feed_1 = require("../storage/feed");
+const feed_2 = require("./feed");
+const Vue = require("vue");
+const _ = require("lodash");
 const emitter_1 = require("./emitter");
-var feedsVue = new Vue({
-    el: '#app',
+let feedsVue = new Vue({
+    el: "#app",
     data: {
-        feeds: []
+        feeds: [],
     },
     methods: {
         updateFeeds: function (feeds) {
             this.feeds = feeds;
         },
         on_open_in_list: function (feed) {
-            emitter_1.default.emit('open_in_list', feed);
+            emitter_1.default.emit("open_in_list", feed);
         },
         onImport: function () {
             dialog.showOpenDialog(function (fileNames) {
                 if (fileNames === undefined)
                     return;
-                var fileName = fileNames[0];
-                fs.readFile(fileName, 'utf-8', function (err, data) {
+                let fileName = fileNames[0];
+                fs.readFile(fileName, "utf-8", function (err, data) {
                     opmlToJSON(data, function (err, json) {
-                        var rss = jsonPath.resolve(json, "/children[*]/children[*]");
+                        let rss = jsonPath.resolve(json, "/children[*]/children[*]");
                         feed_1.default.AddRange(rss, () => {
                         });
                         provider.UpdateFeeds(() => {
@@ -36,8 +36,8 @@ var feedsVue = new Vue({
                     });
                 });
             });
-        }
-    }
+        },
+    },
 });
 feed_1.default.Init();
 class Provider {
@@ -62,7 +62,7 @@ class Provider {
         });
     }
 }
-var provider = new Provider();
+let provider = new Provider();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = provider;
 //# sourceMappingURL=provider.js.map
