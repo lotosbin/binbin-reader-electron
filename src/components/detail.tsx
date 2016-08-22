@@ -22,27 +22,30 @@ export class DetailWebView extends React.Component<DetailWebViewProps,{}> {
 
   componentWillMount() {
     emitter.on("open_in_detail", (entry: IArticle) => {
+      console.log('bind webview events')
+      var detialwebview = document.getElementById('webview');
+      detialwebview.addEventListener('did-start-loading', ()=> {
+        console.log('did-start-loading')
+        emitter.emit('detail:did-start-loading')
+      })
+      detialwebview.addEventListener('did-stop-loading', () => {
+        console.log('did-stop-loading')
+
+        articleStorage.Read({id: this.state.url}, ()=> {
+        })
+        emitter.emit('detail:did-stop-loading')
+        emitter.emit('refresh_list', {})
+      });
       this.setState({
         url: entry.link
+      })
+      articleStorage.Read({id: this.state.url}, ()=> {
       })
     });
   }
 
   componentDidMount() {
-    console.log('bind webview events')
-    var detialwebview = document.getElementById('webview');
-    detialwebview.addEventListener('did-start-loading', ()=> {
-      console.log('did-start-loading')
-      emitter.emit('detail:did-start-loading')
-    })
-    detialwebview.addEventListener('did-stop-loading', () => {
-      console.log('did-stop-loading')
 
-      articleStorage.Read({id: this.state.url}, ()=> {
-      })
-      emitter.emit('detail:did-stop-loading')
-      emitter.emit('refresh_list', {})
-    });
   }
 
   styles = {

@@ -1,5 +1,4 @@
 import detail from "./components/detail";
-import feed from "./components/feed";
 import provider from "./components/provider";
 import {ProviderReact} from "./components/provider";
 import * as React from "react";
