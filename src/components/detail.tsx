@@ -7,40 +7,61 @@ import LinearProgress from 'material-ui/LinearProgress';
 import {IArticle} from "../../definitions/storage/article";
 import * as React from 'react'
 import {shell} from 'electron'
-import * as Vue from 'vue'
 import emitter from "./emitter";
 import articleStorage from '../storage/article'
-var vue = new Vue({
-  el: '#detail',
-  data: {
-    url: 'http://www.yuanjingtech.com'
-  },
-  methods: {
-    UpdateUrl: function (url: string) {
-      this.url = url
-    },
-    MarkReaded: function () {
-      articleStorage.Read({id: this.url}, ()=> {
+import {doSegment} from "../functions/segment";
+
+
+export interface DetailWebViewProps {
+
+}
+export class DetailWebView extends React.Component<DetailWebViewProps,{}> {
+  state = {
+    url: "http://www.yuanjingtech.com"
+  }
+
+  componentWillMount() {
+    emitter.on("open_in_detail", (entry: IArticle) => {
+      this.setState({
+        url: entry.link
       })
+    });
+  }
+
+  componentDidMount() {
+    console.log('bind webview events')
+    var detialwebview = document.getElementById('webview');
+    detialwebview.addEventListener('did-start-loading', ()=> {
+      console.log('did-start-loading')
+      emitter.emit('detail:did-start-loading')
+    })
+    detialwebview.addEventListener('did-stop-loading', () => {
+      console.log('did-stop-loading')
+
+      articleStorage.Read({id: this.state.url}, ()=> {
+      })
+      emitter.emit('detail:did-stop-loading')
+      emitter.emit('refresh_list', {})
+    });
+  }
+
+  styles = {
+    webview: {
+      display: 'flex',
+      flex: 1
     }
   }
-})
-var webview = document.getElementById('webview');
-webview.addEventListener('did-start-loading', function () {
-  emitter.emit('detail:did-start-loading')
-})
-webview.addEventListener('did-stop-loading', function () {
-  vue.MarkReaded()
-  emitter.emit('detail:did-stop-loading')
-  emitter.emit('refresh_list', {})
-})
 
-emitter.on("open_in_detail", (entry: IArticle) => {
-  var url = entry.link
-  vue.UpdateUrl(url)
-  webview.src = url
-});
-
+  render() {
+    return (
+      <webview id="webview"
+               style={this.styles.webview}
+               src={this.state.url}
+      >
+      </webview>
+    );
+  }
+}
 export interface DetailProps {
 
 }
@@ -62,15 +83,18 @@ export class DetailToolBar extends React.Component<DetailToolBarProps,{}> {
 
   componentWillMount() {
     emitter.on('open_in_detail', (entry: IArticle)=> {
+      var segments: string[] = doSegment(entry.title);
+      console.log('segments:' + JSON.stringify(segments))
       this.setState({
         url: entry.link,
-        title: entry.title
+        title: entry.title,
+        segments: segments
       })
     })
   }
 
   onOpenInBrowser() {
-    shell.openExternal(vue.$data.url)
+    shell.openExternal(this.state.url)
   }
 
   render() {

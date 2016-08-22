@@ -1,6 +1,5 @@
 import detail from "./components/detail";
 import feed from "./components/feed";
-import history from "./components/history";
 import provider from "./components/provider";
 import {ProviderReact} from "./components/provider";
 import * as React from "react";
@@ -14,6 +13,9 @@ import {DetailToolBar, DetailProgress} from "./components/detail"
 injectTapEventPlugin();
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import {FeedList} from "./components/feed";
+import {DetailWebView} from "./components/detail";
+import {HistoryList} from "./components/history";
 
 ReactDOM.render(
   <MuiThemeProvider>
@@ -39,14 +41,35 @@ var detailProgress = (
     <DetailProgress></DetailProgress>
   </MuiThemeProvider>
 );
-ReactDOM.render(detailProgress, document.getElementById("detailProgress"));
-var providerList = (
+// ReactDOM.render(detailProgress, document.getElementById("detailProgress"));
+// var providerList = (
+//   <MuiThemeProvider>
+//     <ProviderReact></ProviderReact>
+//   </MuiThemeProvider>
+//
+// );
+// ReactDOM.render(providerList, document.getElementById("providerList"));
+var feedList = (
   <MuiThemeProvider>
-    <ProviderReact></ProviderReact>
+    <FeedList></FeedList>
   </MuiThemeProvider>
 
 );
-// ReactDOM.render(providerList, document.getElementById("providerList"));
+ReactDOM.render(feedList, document.getElementById("entryList"));
+var detailWebView = (
+  <MuiThemeProvider>
+    <DetailWebView></DetailWebView>
+  </MuiThemeProvider>
+
+);
+ReactDOM.render(detailWebView, document.getElementById("detailWebView"));
+
+var historyList = (
+  <MuiThemeProvider>
+    <HistoryList></HistoryList>
+  </MuiThemeProvider>
+);
+ReactDOM.render(historyList, document.getElementById("readHistory"));
 provider.UpdateFeeds(() => {
 });
 let updating = false;
@@ -65,4 +88,3 @@ setInterval(() => {
 // UpdateFeedsArticles();
 
 detail.Init()
-history.Init()

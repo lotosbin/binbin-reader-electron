@@ -4,51 +4,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello World!</title>
-  <link href="index.css" rel="stylesheet" />
+  <link href="index.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
 
 </head>
 
 <body>
-  <div id="topbar" class="" style="display: flex;flex-direction: row; flex:none"></div>
-  <div class="content">
-    <div class="column" style="flex-grow: 0;flex-basis: 20%;">
-      <div class="column" id="entryList" style="display: flex;flex:2">
-        <progress id="entryListProgress" max="100" value="{{ progress }}" style="display: flex;width:100%"></progress>
-        <ul style="flex:1;overflow-y: scroll">
-          <li v-for="entry in entries">
-            <a v-on:click="on_open_in_detail(entry)">{{ entry.title }}</a>
-          </li>
-          <li v-if="!entries.length">
-            暂无内容
-          </li>
-        </ul>
-      </div>
-      <div class="column" id="readHistory" style="display:flex;flex:1;">
-        <ul  class="column" style="flex:1;overflow-y: scroll">
-          <li v-for="entry in histories">
-            <a onclick="open_in_detail('{{entry.link}}');return false">{{ entry.title }}</a>
-          </li>
-        </ul>
-      </div>
-      <div class="column" id="app" s style="display:flex;">
-        <div class="row" style="justify-content: flex-end">
-          <button style="flex:none" v-on:click="onImport()">import opml</button>
-        </div>
-      </div>
-    </div>
-    <div id="detail" class="column" style="flex:1">
-      <div id="detailToolBar"></div>
-      <div id="detailProgress"></div>
-      <webview id="webview" style="flex:auto;display:flex;" src="http://www.binbinsoft.com/" autosize="on" minwidth="800" minheight="600"></webview>
-    </div>
-  </div>
-  <div class="footer" id="status" name="status"> 
+<div id="topbar" class="" style="display: flex;flex-direction: row; flex:none"></div>
+<div class="content">
+  <div class="column" style="flex-grow: 0;flex-basis: 20%;">
+    <div class="column" id="entryList" style="display: flex;flex:2">
 
+    </div>
+    <div class="column" id="readHistory" style="display:flex;flex:1;">
+
+    </div>
+    <div class="column" id="app" s style="display:flex;">
+      <div class="row" style="justify-content: flex-end">
+        <button style="flex:none" v-on:click="onImport()">import opml</button>
+      </div>
+    </div>
   </div>
-  <div id="providerList"></div>
-  <script src="../node_modules/react/dist/react.min.js"></script>
-  <script src="../node_modules/react-dom/dist/react-dom.min.js"></script>
-  <script src="../dist/bundle.js"></script>
+  <div id="detail" class="column" style="flex:1">
+    <div id="detailToolBar"></div>
+    <div id="detailProgress"></div>
+    <div id="detailWebView" style="display: flex;flex:1"></div>
+  </div>
+</div>
+<div class="footer" id="status" name="status">
+
+</div>
+<div id="providerList"></div>
+<script src="../node_modules/react/dist/react.min.js"></script>
+<script src="../node_modules/react-dom/dist/react-dom.min.js"></script>
+<script src="../dist/bundle.js"></script>
 </body>
 </html>
