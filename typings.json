@@ -1,7 +1,7 @@
 {
   "globalDependencies": {
     "github-electron": "registry:dt/github-electron#1.2.5+20160812193136",
-    "lodash": "registry:dt/lodash#4.14.0+20160802150749",
+    "lodash": "registry:dt/lodash#4.14.0+20160817155621",
     "material-ui": "registry:dt/material-ui#0.15.1+20160818062356",
     "node": "registry:dt/node#6.0.0+20160815222444",
     "promise": "registry:dt/promise#7.1.1+20160602154553",

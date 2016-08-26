@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "setup": "npm install --global typescript tslint typings",
-    "postinstall": "./node_modules/.bin/electron-rebuild",
+    "postinstall": "typings install && ./node_modules/.bin/electron-rebuild",
     "build": "gulp && webpack",
     "watch": "gulp watch & webpack -d --watch",
     "start": "gulp && webpack && electron .",
