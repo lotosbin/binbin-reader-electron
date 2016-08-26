@@ -2,6 +2,8 @@
  * Created by liubinbin on 15/08/2016.
  */
 import * as _ from "lodash";
+import {ISuccessCallback} from "./history";
+import {IArticle} from "../../definitions/storage/article";
 const ArticleTableName = "ARTICLES3";
 class ArticleStorage {
   Add({title, link, feed_xmlurl}, callback) {
@@ -48,10 +50,27 @@ class ArticleStorage {
     });
   }
 
+  Get(id: string, callback: ISuccessCallback<IArticle>) {
+    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
+
+    db.transaction(function (tx) {
+      tx.executeSql(`SELECT * FROM ${ArticleTableName} WHERE id=?`, [id], function (tx, results) {
+        if (callback)callback(null, results);
+      }, null);
+    });
+  }
+
+  GetAsync(id: string) {
+    return new Promise((resolve, reject)=> {
+      this.Get(id, (error, article)=> {
+        resolve(article)
+      })
+    })
+  }
+
   Find({}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    let msg;
-
+    
     db.transaction(function (tx) {
       tx.executeSql(`SELECT * FROM ${ArticleTableName}  ORDER BY readed,rowid DESC LIMIT 100`, [], function (tx, results) {
         callback(null, results);
