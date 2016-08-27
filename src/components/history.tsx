@@ -13,7 +13,7 @@ export interface HistoryListProps {
 
 }
 export interface HistoryListState {
-  entries: IArticle[];
+  entries: IHistory[];
 }
 export class HistoryList extends React.Component<HistoryListProps, {}> {
   state: HistoryListState = {
@@ -55,7 +55,9 @@ export class HistoryList extends React.Component<HistoryListProps, {}> {
   render() {
     return (
       <ul style={this.styles.columnReverse}>
-        {this.state.entries.map((entry: IHistory) => this.renderItem(entry))}
+        {this.state.entries.map(async(entry: IHistory) => {
+          return await this.renderItem(entry);
+        })}
       </ul>
     );
   }
