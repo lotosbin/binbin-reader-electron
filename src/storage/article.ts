@@ -8,7 +8,7 @@ const ArticleTableName = "ARTICLES3";
 class ArticleStorage {
   Add({title, link, feed_xmlurl}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    let msg;
+    
     db.transaction(function (tx) {
       tx.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed) VALUES (? ,?,?,?,?)`, [link, title, link, feed_xmlurl, 0], function (transaction, results) {
 
@@ -21,7 +21,7 @@ class ArticleStorage {
   Read({id}, callback) {
     console.log("read:" + id);
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    let msg;
+    
     db.transaction(function (tx) {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], function (transaction, results) {
 
@@ -33,12 +33,10 @@ class ArticleStorage {
 
   Init() {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    let msg;
 
     db.transaction(function (tx) {
       tx.executeSql(`CREATE TABLE IF NOT EXISTS ${ArticleTableName} (id UNIQUE, title, link, feed_xmlurl,readed)`);
-      msg = "<p>created </p>";
-      console.log(msg);
+      console.log("<p>created </p>");
     });
   }
 
