@@ -3,6 +3,7 @@
  */
 import * as _ from "lodash";
 import values = require("lodash/values");
+import {IArticle} from "../../definitions/storage/article";
 export interface ISuccessCallback<TData> {
   (error: any, data: TData): void
 }
@@ -70,18 +71,22 @@ class HistoryStorage extends Storage<History> {
     });
   }
 
-  Find({}, callback: ISuccessCallback<IHistory[]>) {
+  Find({}, callback: ISuccessCallback<IArticle[]>) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
     db.transaction((tx) => {
-      tx.executeSql(`SELECT * FROM  ${this.tableName()} ORDER BY rowid DESC LIMIT 100`, [], (tx, results) => {
-        callback(null, results);
+      tx.executeSql(`SELECT h.id AS hId,a.* FROM  ${this.tableName()} h LEFT JOIN ARTICLE3 a ON h.articleId=a.id ORDER BY rowid DESC LIMIT 100`, [], (tx, results) => {
+        var d: IArticle[] = [];
+        for (var i = 0; i < results.rows.length; i++) {
+          d.push(results.rows.item(i))
+        }
+        callback(null, d);
       }, null);
     });
   }
 
   FindAsync() {
     return new Promise((resolve, reject)=> {
-      this.Find({}, (error: any, data: IHistory[])=> {
+      this.Find({}, (error: any, data: IArticle[])=> {
         resolve(data)
       })
     })

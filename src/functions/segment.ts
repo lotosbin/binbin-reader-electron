@@ -1,6 +1,9 @@
 /**
  * Created by liubinbin on 2016/8/23.
  */
+export interface ISegment {
+  w: string,
+}
 // 载入模块
 var Segment = require('segment');
 // 创建实例
@@ -10,7 +13,7 @@ segment.useDefault();
 
 // 开始分词
 console.log(segment.doSegment('这是一个基于Node.js的中文分词模块。'));
-export function doSegment(s:string){
+export function doSegment(s: string) {
   var r = segment.doSegment(s);
-  return r.map((v)=>v.w);
+  return r.map((v: ISegment)=>v.w);
 }

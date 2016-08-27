@@ -13,7 +13,7 @@ export interface HistoryListProps {
 
 }
 export interface HistoryListState {
-  entries: IHistory[];
+  entries: IArticle[];
 }
 export class HistoryList extends React.Component<HistoryListProps, {}> {
   state: HistoryListState = {
@@ -23,15 +23,18 @@ export class HistoryList extends React.Component<HistoryListProps, {}> {
   componentWillMount() {
     emitter.on("open_in_detail", (entry: IArticle) => {
       History.AddAsync({id: 0, articleId: entry.id})
-        .then(()=> {
-          History.FindAsync()
-            .then((data)=> {
-              this.setState({
-                entries: data
-              });
-            })
-        })
+        .then(()=> this.update())
     });
+    this.update()
+  }
+
+  private update() {
+    History.FindAsync()
+      .then((data)=> {
+        this.setState({
+          entries: data
+        });
+      })
   }
 
   open_in_detail(link: string) {
@@ -45,8 +48,7 @@ export class HistoryList extends React.Component<HistoryListProps, {}> {
       overflow: 'scroll'
     }
   }
-  renderItem = async(history: IHistory) => {
-    var entry = await ArticleStorage.GetAsync(history.articleId)
+  renderItem = (entry: IArticle) => {
     return (
       <li key={entry.id}><a onClick={this.open_in_detail.bind(this,entry.link)}>{entry.title}</a></li>
     );
@@ -55,8 +57,8 @@ export class HistoryList extends React.Component<HistoryListProps, {}> {
   render() {
     return (
       <ul style={this.styles.columnReverse}>
-        {this.state.entries.map(async(entry: IHistory) => {
-          return await this.renderItem(entry);
+        {this.state.entries.map((entry: IArticle) => {
+          return this.renderItem(entry);
         })}
       </ul>
     );
