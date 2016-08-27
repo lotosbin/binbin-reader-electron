@@ -9,7 +9,11 @@ import {RaisedButton} from "material-ui";
 import {ToolbarSeparator} from "material-ui";
 import {ToolbarGroup} from "material-ui";
 import {Toolbar} from "material-ui";
-
+import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
+import {List, ListItem} from "material-ui/List"
+import Divider from 'material-ui/Divider';
+import Subheader from 'material-ui/Subheader';
+import Avatar from 'material-ui/Avatar';
 export class Feed {
   async UpdateList() {
     articleStorage.Find({}, (error, results)=> {
@@ -84,9 +88,10 @@ export class FeedList extends React.Component<FeedListProps,{}> {
 
   renderItem(entry: IFeed) {
     return (
-      <li key={entry.id}>
-        <a onClick={this.on_open_in_detail.bind(this,entry)}>{entry.title}</a>
-      </li>
+      <ListItem key={entry.id}
+                onClick={()=>this.on_open_in_detail(entry)}
+                primaryText={entry.title}
+      />
     );
   }
 
@@ -108,7 +113,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
         <Toolbar style={{flex:'none'}}>
           <ToolbarGroup>
             <ToolbarSeparator />
-            <RaisedButton label="Refresh" primary={true} onClick={this.onRefresh.bind(this)}/>
+            <RaisedButton label="Refresh" primary={true} onClick={()=>this.onRefresh()}/>
           </ToolbarGroup>
         </Toolbar>
         <progress style={{display:'flex',flex:'none'}}
@@ -116,9 +121,10 @@ export class FeedList extends React.Component<FeedListProps,{}> {
                   max="100"
                   value={ this.state.progress }>
         </progress>
-        <ul style={this.styles.columnScroll}>
+        <List style={this.styles.columnScroll}>
+          <Subheader>待读列表</Subheader>
           {this.state.entries.map((feed)=>this.renderItem(feed))}
-        </ul>
+        </List>
       </div>
     );
   }
