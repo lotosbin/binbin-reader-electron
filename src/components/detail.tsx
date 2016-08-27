@@ -10,10 +10,11 @@ import {shell} from "electron";
 import emitter from "./emitter";
 import articleStorage from "../storage/article";
 import {doSegment} from "../functions/segment";
+import {View} from "react"
 
 
 export interface DetailWebViewProps {
-
+  style: any
 }
 export class DetailWebView extends React.Component<DetailWebViewProps, {}> {
   state = {
@@ -21,79 +22,30 @@ export class DetailWebView extends React.Component<DetailWebViewProps, {}> {
   };
 
   public componentWillMount() {
-    emitter.on("open_in_detail", (entry: IArticle) => {
-      console.log("bind webview events");
-      // let detialwebview = document.getElementById("webview");
-      // detialwebview.addEventListener("did-start-loading", () => {
-      //   console.log("did-start-loading");
-      //   emitter.emit("detail:did-start-loading");
-      // });
-      // detialwebview.addEventListener("did-stop-loading", () => {
-      //   console.log("did-stop-loading");
 
-      //   articleStorage.Read({id: this.state.url}, () => {
-      //   });
-      //   emitter.emit("detail:did-stop-loading");
-      //   emitter.emit("refresh_list", {});
-      // });
-      this.setState({
-        url: entry.link,
-      });
-      articleStorage.Read({id: this.state.url}, () => {
-      });
-    });
   }
 
-  public componentDidMount() {
-      let detialwebview = document.getElementById("webview");
-      detialwebview.addEventListener("did-start-loading", () => {
-        console.log("did-start-loading");
-        emitter.emit("detail:did-start-loading");
-      });
-      detialwebview.addEventListener("did-stop-loading", () => {
-        console.log("did-stop-loading");
 
-        articleStorage.Read({id: this.state.url}, () => {
-        });
-        emitter.emit("detail:did-stop-loading");
-        emitter.emit("refresh_list", {});
-      });
-  }
-
-  public styles = {
-    webview: {
-      display: "flex",
-      flex: 1,
-    },
-  };
-
-  public render() {
-    return (
-      <webview id="webview"
-               style={this.styles.webview}
-               src={this.state.url}
-      >
-      </webview>
-    );
-  }
 }
 export interface IDetailProps {
 
 }
 export class Detail extends React.Component<IDetailProps, {}> {
-  public Init() {
-
-  }
-}
-
-
-export interface DetailToolBarProps {
-
-}
-export class DetailToolBar extends React.Component<DetailToolBarProps, {}> {
   state = {
-    url: "",
+    url: "http://www.yuanjingtech.com",
     title: "",
+    value: 0
+  }
+  styles = {
+    webview: {
+      display: "flex",
+      flex: 1,
+    },
+    column: {
+      display: 'flex',
+      flexDirection: 'column',
+      flex: 1,
+    }
   };
 
   componentWillMount() {
@@ -106,35 +58,6 @@ export class DetailToolBar extends React.Component<DetailToolBarProps, {}> {
         segments: segments,
       });
     });
-  }
-
-  onOpenInBrowser() {
-    shell.openExternal(this.state.url);
-  }
-
-  render() {
-    return (
-      <Toolbar>
-        <ToolbarGroup firstChild={true}>
-          <ToolbarTitle text={this.state.title}/>
-        </ToolbarGroup>
-        <ToolbarGroup>
-          <ToolbarSeparator />
-          <RaisedButton label="Open In Browser" primary={true} onClick={this.onOpenInBrowser.bind(this)}/>
-        </ToolbarGroup>
-      </Toolbar>
-    );
-  }
-}
-export interface DetailProgressProps {
-
-}
-export class DetailProgress extends React.Component<DetailProgressProps, {}> {
-  state = {
-    value: 0,
-  };
-
-  componentWillMount() {
     emitter.on("detail:did-start-loading", () => {
       this.setState({
         value: 20,
@@ -145,16 +68,56 @@ export class DetailProgress extends React.Component<DetailProgressProps, {}> {
         value: 100,
       });
     });
+    emitter.on("open_in_detail", (entry: IArticle) => {
+      this.setState({
+        url: entry.link,
+      });
+      articleStorage.Read({id: this.state.url}, () => {
+      });
+    });
+  }
+
+  public componentDidMount() {
+    let detialwebview = document.getElementById("webview");
+    detialwebview.addEventListener("did-start-loading", () => {
+      console.log("did-start-loading");
+      emitter.emit("detail:did-start-loading");
+    });
+    detialwebview.addEventListener("did-stop-loading", () => {
+      console.log("did-stop-loading");
+
+      articleStorage.Read({id: this.state.url}, () => {
+      });
+      emitter.emit("detail:did-stop-loading");
+      emitter.emit("refresh_list", {});
+    });
+  }
+
+  onOpenInBrowser() {
+    shell.openExternal(this.state.url);
   }
 
   render() {
     return (
-      <LinearProgress
-        mode="determinate"
-        value={this.state.value}/>
+      <div style={this.styles.column}>
+        <Toolbar>
+          <ToolbarGroup firstChild={true}>
+            <ToolbarTitle text={this.state.title}/>
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <ToolbarSeparator />
+            <RaisedButton label="Open In Browser" primary={true} onClick={this.onOpenInBrowser.bind(this)}/>
+          </ToolbarGroup>
+        </Toolbar>
+        <LinearProgress
+          mode="determinate"
+          value={this.state.value}/>
+        <webview id="webview"
+                 style={this.styles.webview}
+                 src={this.state.url}
+        >
+        </webview>
+      </div>
     );
   }
 }
-
-let detail = new Detail();
-export default detail;

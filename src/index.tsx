@@ -1,4 +1,3 @@
-import detail from "./components/detail";
 import provider from "./components/provider";
 import {ProviderReact} from "./components/provider";
 import * as React from "react";
@@ -6,7 +5,7 @@ import * as ReactDOM from "react-dom";
 import {TopBar} from "./components/topbar"
 import * as injectTapEventPlugin from "react-tap-event-plugin";
 import {BottomNavigationExampleSimple as BottomNavigation} from "./components/bottomnav"
-import {DetailToolBar, DetailProgress} from "./components/detail"
+import {Detail} from "./components/detail"
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
@@ -29,18 +28,13 @@ var bottomNavigation =
     <BottomNavigation></BottomNavigation>
   </MuiThemeProvider>;
 ReactDOM.render(bottomNavigation, document.getElementById("status"));
-var detailToolBar = (
+var detail = (
   <MuiThemeProvider>
-    <DetailToolBar></DetailToolBar>
+    <Detail></Detail>
   </MuiThemeProvider>
 );
-ReactDOM.render(detailToolBar, document.getElementById("detailToolBar"));
-var detailProgress = (
-  <MuiThemeProvider>
-    <DetailProgress></DetailProgress>
-  </MuiThemeProvider>
-);
-// ReactDOM.render(detailProgress, document.getElementById("detailProgress"));
+
+ReactDOM.render(detail, document.getElementById("detail"));
 // var providerList = (
 //   <MuiThemeProvider>
 //     <ProviderReact></ProviderReact>
@@ -55,13 +49,6 @@ var feedList = (
 
 );
 ReactDOM.render(feedList, document.getElementById("entryList"));
-var detailWebView = (
-  <MuiThemeProvider>
-    <DetailWebView></DetailWebView>
-  </MuiThemeProvider>
-
-);
-ReactDOM.render(detailWebView, document.getElementById("detailWebView"));
 
 var historyList = (
   <MuiThemeProvider>
@@ -85,5 +72,3 @@ setInterval(() => {
   UpdateFeedsArticles();
 }, 1000 * 60 * 30); // 30 minus
 // UpdateFeedsArticles();
-
-detail.Init()
