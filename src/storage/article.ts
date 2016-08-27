@@ -8,20 +8,28 @@ const ArticleTableName = "ARTICLES3";
 class ArticleStorage {
   Add({title, link, feed_xmlurl}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    
+
     db.transaction(function (tx) {
       tx.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed) VALUES (? ,?,?,?,?)`, [link, title, link, feed_xmlurl, 0], function (transaction, results) {
-
+        if (callback)callback();
       }, function (transation, error) {
         console.log(error);
       });
     });
   }
 
+  AddAsync({title, link, feed_xmlurl}) {
+    return new Promise((resolve, reject)=> {
+      this.Add({title, link, feed_xmlurl}, (error, results)=> {
+        resolve(results)
+      })
+    })
+  }
+
   Read({id}, callback) {
     console.log("read:" + id);
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    
+
     db.transaction(function (tx) {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], function (transaction, results) {
 
@@ -42,13 +50,22 @@ class ArticleStorage {
 
 
   AddRange(items, feed_xmlurl, callback) {
-    _(items).forEach((value) => {
-      this.Add({title: value.title, link: value.link, feed_xmlurl: feed_xmlurl}, () => {
-      });
-    });
+    var promises = items.map((item)=>this.AddAsync(item));
+    Promise.all(promises)
+      .then(()=> {
+        if (callback)callback()
+      })
   }
 
-  Get(id: string, callback: ISuccessCallback<IArticle>) {
+  AddRangeAsync(items, feed_xmlurl) {
+    return new Promise((resolve, reject)=> {
+      this.AddRange(items, feed_xmlurl, ()=> {
+        resolve({})
+      })
+    })
+  }
+
+  Get(id: string, callback: ISuccessCallback < IArticle >) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
     db.transaction(function (tx) {
@@ -68,7 +85,7 @@ class ArticleStorage {
 
   Find({}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    
+
     db.transaction(function (tx) {
       tx.executeSql(`SELECT * FROM ${ArticleTableName}  ORDER BY readed,rowid DESC LIMIT 100`, [], function (tx, results) {
         callback(null, results);

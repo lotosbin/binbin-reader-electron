@@ -2,7 +2,10 @@
  * Created by liubinbin on 15/08/2016.
  */
 import * as _ from "lodash";
-class FeedStorage {
+import {ISuccessCallback} from "./history";
+import {IFeed} from "../../definitions/storage/feed";
+import {Storage} from "./storagebase"
+class FeedStorage extends Storage<IFeed> {
   Init() {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
@@ -14,7 +17,7 @@ class FeedStorage {
 
   Add({title, xmlurl}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    
+
     db.transaction(function (tx) {
       tx.executeSql("INSERT INTO FEEDS (id, title,xmlurl) VALUES (? ,?,?)", [xmlurl, title, xmlurl], function (transaction, results) {
 
@@ -31,12 +34,16 @@ class FeedStorage {
     });
   }
 
-  Find({}, callback) {
+  Find({}, callback: ISuccessCallback<IFeed[]>) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    
+
     db.transaction(function (tx) {
       tx.executeSql("SELECT * FROM FEEDS", [], function (tx, results) {
-        callback(null, results);
+        var d: IFeed[] = [];
+        for (var i = 0; i < results.rows.length; i++) {
+          d.push(results.rows.item(i))
+        }
+        if (callback)callback(null, d);
       }, null);
     });
   }
