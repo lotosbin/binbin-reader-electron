@@ -9,7 +9,7 @@ class FeedStorage extends Storage<IFeed> {
   Init() {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction(function (tx) {
+    db.transaction((tx) => {
       tx.executeSql("CREATE TABLE IF NOT EXISTS FEEDS (id UNIQUE, title, xmlurl)");
       console.log("<p>created </p>");
     });
@@ -18,10 +18,10 @@ class FeedStorage extends Storage<IFeed> {
   Add({title, xmlurl}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction(function (tx) {
-      tx.executeSql("INSERT INTO FEEDS (id, title,xmlurl) VALUES (? ,?,?)", [xmlurl, title, xmlurl], function (transaction, results) {
+    db.transaction((tx) => {
+      tx.executeSql("INSERT INTO FEEDS (id, title,xmlurl) VALUES (? ,?,?)", [xmlurl, title, xmlurl], (transaction, results) => {
 
-      }, function (transation, error) {
+      }, (transation, error) => {
         console.log(error);
       });
     });
@@ -37,14 +37,25 @@ class FeedStorage extends Storage<IFeed> {
   Find({}, callback: ISuccessCallback<IFeed[]>) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction(function (tx) {
-      tx.executeSql("SELECT * FROM FEEDS", [], function (tx, results) {
+    db.transaction((tx) => {
+      tx.executeSql("SELECT * FROM FEEDS", [], (tx, results) => {
         var d: IFeed[] = [];
         for (var i = 0; i < results.rows.length; i++) {
           d.push(results.rows.item(i))
         }
         if (callback)callback(null, d);
       }, null);
+    });
+  }
+
+  importOpml(fileName: string) {
+    fs.readFile(fileName, "utf-8", (err, data) => {
+      opmlToJSON(data, (err, json) => {
+        let rss = jsonPath.resolve(json, "/children[*]/children[*]");
+        feedStorage.AddRange(rss, () => {
+
+        });
+      });
     });
   }
 }

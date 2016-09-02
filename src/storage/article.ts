@@ -9,10 +9,10 @@ class ArticleStorage {
   Add({title, link, feed_xmlurl}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction(function (tx) {
-      tx.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed) VALUES (? ,?,?,?,?)`, [link, title, link, feed_xmlurl, 0], function (transaction, results) {
+    db.transaction( (tx) => {
+      tx.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed) VALUES (? ,?,?,?,?)`, [link, title, link, feed_xmlurl, 0],  (transaction, results) => {
         if (callback)callback();
-      }, function (transation, error) {
+      },  (transation, error) => {
         console.log(error);
       });
     });
@@ -30,10 +30,10 @@ class ArticleStorage {
     console.log("read:" + id);
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction(function (tx) {
-      tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], function (transaction, results) {
+    db.transaction( (tx) => {
+      tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id],  (transaction, results) => {
 
-      }, function (transation, error) {
+      },  (transation, error) => {
         console.log(error);
       });
     });
@@ -42,7 +42,7 @@ class ArticleStorage {
   Init() {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction(function (tx) {
+    db.transaction( (tx) => {
       tx.executeSql(`CREATE TABLE IF NOT EXISTS ${ArticleTableName} (id UNIQUE, title, link, feed_xmlurl,readed)`);
       console.log("<p>created </p>");
     });
@@ -68,8 +68,8 @@ class ArticleStorage {
   Get(id: string, callback: ISuccessCallback < IArticle >) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction(function (tx) {
-      tx.executeSql(`SELECT * FROM ${ArticleTableName} WHERE id=?`, [id], function (tx, results) {
+    db.transaction( (tx) => {
+      tx.executeSql(`SELECT * FROM ${ArticleTableName} WHERE id=?`, [id],  (tx, results) => {
         if (callback)callback(null, results);
       }, null);
     });
@@ -86,8 +86,8 @@ class ArticleStorage {
   Find({}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction(function (tx) {
-      tx.executeSql(`SELECT * FROM ${ArticleTableName}  ORDER BY readed,rowid DESC LIMIT 100`, [], function (tx, results) {
+    db.transaction( (tx) => {
+      tx.executeSql(`SELECT * FROM ${ArticleTableName}  ORDER BY readed,rowid DESC LIMIT 100`, [],  (tx, results) => {
         callback(null, results);
       }, null);
     });

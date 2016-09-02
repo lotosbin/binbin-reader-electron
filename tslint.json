@@ -7,10 +7,15 @@
    */
   "extends": "tslint:latest",
   "rules": {
-    /*
+    /* 
      * Any rules specified here will override those from the base config we are extending
      */
-    "no-constructor-vars": true
+    "member-access": false,
+    "trailing-comma": false,
+    "quotemark": false,
+    "semicolon": false,
+    "no-constructor-vars": true,
+    "ordered-imports": false
   },
   "rulesDirectory": [
     /*

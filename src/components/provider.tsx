@@ -8,15 +8,14 @@ import feedStorage from "../storage/feed";
 import feedService from "./feed";
 import * as _ from "lodash";
 import emitter from "./emitter";
-import {Drawer} from "material-ui";
 import {List} from "material-ui";
 import {ListItem} from "material-ui";
 import {IFeed} from "../../definitions/storage/feed";
-
+import {ICallback} from "../../definitions/common"
 
 class Provider {
 
-  public UpdateFeedsArticles(callback) {
+  public UpdateFeedsArticles(callback: ICallback<any, any>) {
     feedStorage.Find({}, function (error, feeds) {
       Promise.all(_.map(feeds, (feed) => new Promise((resolve) => {
         feedService.GrabAndUpdateArticles(feed.xmlurl, function (error) {
@@ -24,29 +23,31 @@ class Provider {
         });
       })))
         .then(() => {
-          if (callback)callback(null);
+          if (callback) {
+            callback(null, null);
+          }
         });
     });
   }
 }
-export interface ProviderProps {
+export interface IProviderProps {
 
 }
-export interface ProviderState {
+export interface IProviderState {
   open: boolean,
   data: IFeed[]
 }
-export class ProviderReact extends React.Component<ProviderProps,{}> {
-  state: ProviderState = {
+export class ProviderReact extends React.Component<IProviderProps,{}> {
+  state: IProviderState = {
+    data: [],
     open: false,
-    data: []
   }
 
-  componentWillMount() {
-    emitter.on('on_show_provider_list', ()=> {
+  public componentWillMount() {
+    emitter.on('on_show_provider_list', () => {
       this.setState({
         open: true,
-      })
+      });
     })
     feedStorage.Find({}, (error: any, results: any[]) => {
       this.setState({
@@ -82,11 +83,11 @@ export class ProviderReact extends React.Component<ProviderProps,{}> {
   }
 
   onImport() {
-    dialog.showOpenDialog(function (fileNames) {
+    dialog.showOpenDialog( (fileNames:string[]) => {
       if (fileNames === undefined) return;
       let fileName = fileNames[0];
-      fs.readFile(fileName, "utf-8", function (err, data) {
-        opmlToJSON(data, function (err, json) {
+      fs.readFile(fileName, "utf-8",  (err, data) => {
+        opmlToJSON(data,  (err, json) => {
           let rss = jsonPath.resolve(json, "/children[*]/children[*]");
           feedStorage.AddRange(rss, () => {
 
@@ -100,11 +101,18 @@ export class ProviderReact extends React.Component<ProviderProps,{}> {
     emitter.emit('open_in_list', feed)
   }
 
-  renderItem = (feed: IFeed)=> {
+  renderItem = (feed: IFeed) => {
     return <ListItem key={feed.id} primaryText={feed.title} onClick={this.onOpenInList(feed)}/>
   }
 
-  render() {
+  public listItem = (feed: IFeed) => {
+    return <ListItem key={feed.id} primaryText={feed.title} onClick={this.onOpenInList(feed)}/>;
+  }
+  style = {
+    margin: 12,
+  };
+
+  public render() {
     return (
       <List>
         {this.state.data.map(this.renderItem)}
