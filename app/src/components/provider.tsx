@@ -18,6 +18,8 @@ export class ProviderList extends React.Component<IProviderProps,{}> {
   state: IProviderState = {
     data: []
   }
+  private interval;
+  private updating: boolean = false;
 
   componentWillMount() {
   }
