@@ -121,11 +121,11 @@ class ArticleStorage {
     })
   }
 
-  Find({}, callback) {
+  FindUnread({}, callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
     db.transaction((tx) => {
-      tx.executeSql(`SELECT * FROM ${ArticleTableName}  ORDER BY readed,rowid DESC LIMIT 100`, [], (tx, results) => {
+      tx.executeSql(`SELECT * FROM ${ArticleTableName}  WHERE readed = 0 ORDER BY rowid DESC LIMIT 100`, [], (tx, results) => {
         callback(null, results);
       }, null);
     });

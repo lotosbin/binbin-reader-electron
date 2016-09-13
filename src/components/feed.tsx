@@ -13,7 +13,7 @@ import Subheader from 'material-ui/Subheader';
 
 export class Feed {
   async UpdateList() {
-    articleStorage.Find({}, (error, results) => {
+    articleStorage.FindUnread({}, (error, results) => {
       var d: IFeed[] = [];
       for (var i = 0; i < results.rows.length; i++) {
         d.push(results.rows.item(i))
