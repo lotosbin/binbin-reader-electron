@@ -91,7 +91,6 @@ export class Detail extends React.Component<IDetailProps, {}> {
       articleStorage.Read({id: this.state.url}, () => {
       });
       emitter.emit("detail:did-stop-loading");
-      emitter.emit("refresh_list", {});
     });
   }
 

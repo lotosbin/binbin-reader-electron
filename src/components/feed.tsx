@@ -3,45 +3,8 @@ import  * as reader from 'feed-reader'
 import articleStorage from '../storage/article'
 import emitter from './emitter'
 import {IFeed} from "../../definitions/storage/feed";
-import {RaisedButton} from "material-ui";
-import {ToolbarSeparator} from "material-ui";
-import {ToolbarGroup} from "material-ui";
-import {Toolbar} from "material-ui";
-import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 import {List, ListItem} from "material-ui/List"
-import Subheader from 'material-ui/Subheader';
-
-export class Feed {
-  async UpdateList() {
-    articleStorage.FindUnread({}, (error, results) => {
-      var d: IFeed[] = [];
-      for (var i = 0; i < results.rows.length; i++) {
-        d.push(results.rows.item(i))
-      }
-      emitter.emit('update_feed_list', d)
-    })
-  }
-
-
-  async open_in_list(xmlurl: string, callback) {
-    try {
-      this.GrabAndUpdateArticles(xmlurl, () => {
-      });
-      await this.UpdateList()
-      if (callback)callback(null)
-    } catch (error) {
-      if (callback)callback(error)
-    }
-  }
-
-  async GrabAndUpdateArticles(xmlurl: string, callback) {
-    let feed = await reader.parse(xmlurl)
-    articleStorage.AddRange(feed.entries, xmlurl, () => {
-      if (callback)callback();
-    })
-  }
-}
-export var feed = new Feed()
+import * as _ from 'lodash'
 export interface FeedListProps {
 
 }
@@ -59,16 +22,61 @@ export class FeedList extends React.Component<FeedListProps,{}> {
 
   componentWillMount() {
     emitter.on('open_in_list', (f: IFeed) => {
-      feed.open_in_list(f.xmlurl, () => {
+      this.open_in_list(f.xmlurl, () => {
       })
     })
     emitter.on('refresh_list', (f: IFeed) => {
-      feed.UpdateList()
+      this.UpdateList()
     })
     emitter.on('update_feed_list', (feeds: IFeed[]) => {
       this.setState({
         entries: feeds
       })
+    })
+    emitter.on('article_readed', (id: any) => {
+      var a = this.state.entries.find((v) => v.id === id)
+      if (a) {
+        this.setState({
+          entries: _.without(this.state.entries, a)
+        })
+      }
+    })
+    emitter.on('article_markreaded', (id: any) => {
+      var a = this.state.entries.find((v) => v.id === id)
+      if (a) {
+        this.setState({
+          entries: _.without(this.state.entries, a)
+        })
+      }
+    })
+  }
+
+  async open_in_list(xmlurl: string, callback) {
+    try {
+      this.GrabAndUpdateArticles(xmlurl, () => {
+      });
+      await this.UpdateList()
+      if (callback)callback(null)
+    } catch (error) {
+      if (callback)callback(error)
+    }
+  }
+
+  async UpdateList() {
+    articleStorage.FindUnread({}, (error, results) => {
+      var d: IFeed[] = [];
+      for (var i = 0; i < results.rows.length; i++) {
+        d.push(results.rows.item(i))
+      }
+      emitter.emit('update_feed_list', d)
+    })
+  }
+
+
+  async GrabAndUpdateArticles(xmlurl: string, callback) {
+    let feed = await reader.parse(xmlurl)
+    articleStorage.AddRange(feed.entries, xmlurl, () => {
+      if (callback)callback();
     })
   }
 
@@ -83,7 +91,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
   }
 
   onRefresh() {
-    feed.UpdateList()
+    this.UpdateList()
   }
 
   renderItem(entry: IFeed) {

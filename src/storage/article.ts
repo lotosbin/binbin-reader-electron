@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import {ISuccessCallback} from "./history";
 import {IArticle} from "../../definitions/storage/article";
 import reject = require("lodash/reject");
+import emitter from "../components/emitter";
 const ArticleTableName = "ARTICLES3";
 enum Readed{
   Unread = 0,
@@ -38,6 +39,7 @@ class ArticleStorage {
 
     db.transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], (transaction, results) => {
+        emitter.emit("article_readed",id)
         if (callback)callback(null)
       }, (transation, error) => {
         console.log(error);
@@ -51,6 +53,8 @@ class ArticleStorage {
 
     db.transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 2 WHERE id = ? `, [id], (transaction, results) => {
+        console.log(`MarkUnreaded:${id}`)
+        emitter.emit("article_markreaded",id)
         if (callback)callback(null)
       }, (transation, error) => {
         console.log(error);
