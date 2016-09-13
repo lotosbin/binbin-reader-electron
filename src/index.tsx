@@ -11,31 +11,57 @@ injectTapEventPlugin();
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {SideBar} from "./components/sidebar";
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import emitter from "./components/emitter";
+class Main extends React.Component<{},{}> {
+  state = {
+    currentTheme: getMuiTheme(lightBaseTheme)
+  }
 
-var detail = (
-  <MuiThemeProvider>
-    <div style={{display:'flex',flexDirection:'column'}}>
-      <div id="topbar" className="" style={{display: 'flex',flexDirection: 'row', flex:'none'}}>
-        <TopBar />
-      </div>
-      <div className="content" style={{display:'flex'}}>
-        <div id="divsideBar" className="column" style={{flexGrow: 0,flexBasis: '20%'}}>
-          <SideBar></SideBar>
-        </div>
-        <div id="detail" className="column" style={{flex:1}}>
-          <Detail></Detail>
-        </div>
-      </div>
-      <div className="footer" id="status" name="status">
-        <BottomNavigation></BottomNavigation>
-        <div className="column" id="app" style={{display:'flex'}}>
-          <div className="row" style={{justifyContent: 'flex-end'}}>
-            <button style={{flex:'none'}} onClick="onImport()">import opml</button>
+  componentWillMount() {
+    emitter.on('toggle_theme', (nightmode: boolean) => {
+      console.log('toggle_theme' + nightmode)
+      if (nightmode)
+        this.setState({
+          currentTheme: getMuiTheme(darkBaseTheme)
+        })
+      else {
+        this.setState({
+          currentTheme: getMuiTheme(lightBaseTheme)
+        })
+      }
+    });
+  }
+
+  render() {
+    return (
+      <MuiThemeProvider muiTheme={this.state.currentTheme}>
+        <div style={{display:'flex',flexDirection:'column'}}>
+          <div id="topbar" className="" style={{display: 'flex',flexDirection: 'row', flex:'none'}}>
+            <TopBar />
+          </div>
+          <div className="content" style={{display:'flex'}}>
+            <div id="divsideBar" className="column" style={{flexGrow: 0,flexBasis: '20%'}}>
+              <SideBar></SideBar>
+            </div>
+            <div id="detail" className="column" style={{flex:1}}>
+              <Detail></Detail>
+            </div>
+          </div>
+          <div className="footer" id="status" name="status">
+            <BottomNavigation></BottomNavigation>
+            <div className="column" id="app" style={{display:'flex'}}>
+              <div className="row" style={{justifyContent: 'flex-end'}}>
+                <button style={{flex:'none'}} onClick="onImport()">import opml</button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </MuiThemeProvider>
-);
-ReactDOM.render(detail, document.getElementById("body"));
+      </MuiThemeProvider>
+    );
+  }
+}
+ReactDOM.render(<Main></Main>, document.getElementById("body"));
 

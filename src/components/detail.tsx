@@ -11,6 +11,7 @@ import emitter from "./emitter";
 import articleStorage from "../storage/article";
 import {doSegment} from "../functions/segment";
 import {View} from "react"
+import {Toggle} from "material-ui";
 
 
 export interface DetailWebViewProps {
@@ -34,7 +35,8 @@ export class Detail extends React.Component<IDetailProps, {}> {
   state = {
     url: "http://www.yuanjingtech.com",
     title: "",
-    value: 0
+    value: 0,
+    nightMode: false,
   }
   styles = {
     webview: {
@@ -97,12 +99,27 @@ export class Detail extends React.Component<IDetailProps, {}> {
     shell.openExternal(this.state.url);
   }
 
+  onToggleTheme() {
+    this.setState({
+      nightMode: !this.state.nightMode
+    }, () => {
+      emitter.emit('toggle_theme', this.state.nightMode)
+    })
+  }
+
   render() {
     return (
       <div style={this.styles.column}>
         <Toolbar>
           <ToolbarGroup firstChild={true}>
             <ToolbarTitle text={this.state.title}/>
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <Toggle
+              label="Night Mode"
+              toggled={this.state.nightMode}
+              onToggle={this.onToggleTheme.bind(this)}
+            />
           </ToolbarGroup>
           <ToolbarGroup>
             <ToolbarSeparator />

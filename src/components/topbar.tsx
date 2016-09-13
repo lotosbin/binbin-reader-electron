@@ -6,6 +6,7 @@ import {
   AppBar
 } from "material-ui";
 import emitter from "./emitter";
+import {Toggle} from "material-ui";
 
 export interface TopBarProps {
 }
@@ -21,7 +22,8 @@ export class TopBar extends React.Component<TopBarProps, {}> {
       <AppBar title="BinbinReader"
               iconClassNameRight="muidocs-icon-navigation-expand-more"
               onTitleTouchTap={this.onShowProviderList.bind(this)}
-      />
+      >
+      </AppBar>
     );
   }
 }
