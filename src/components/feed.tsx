@@ -13,7 +13,7 @@ import Subheader from 'material-ui/Subheader';
 
 export class Feed {
   async UpdateList() {
-    articleStorage.Find({}, (error, results)=> {
+    articleStorage.Find({}, (error, results) => {
       var d: IFeed[] = [];
       for (var i = 0; i < results.rows.length; i++) {
         d.push(results.rows.item(i))
@@ -25,7 +25,7 @@ export class Feed {
 
   async open_in_list(xmlurl: string, callback) {
     try {
-      this.GrabAndUpdateArticles(xmlurl, ()=> {
+      this.GrabAndUpdateArticles(xmlurl, () => {
       });
       await this.UpdateList()
       if (callback)callback(null)
@@ -36,7 +36,7 @@ export class Feed {
 
   async GrabAndUpdateArticles(xmlurl: string, callback) {
     let feed = await reader.parse(xmlurl)
-    articleStorage.AddRange(feed.entries, xmlurl, ()=> {
+    articleStorage.AddRange(feed.entries, xmlurl, () => {
       if (callback)callback();
     })
   }
@@ -58,21 +58,27 @@ export class FeedList extends React.Component<FeedListProps,{}> {
   }
 
   componentWillMount() {
-    emitter.on('open_in_list', (f: IFeed)=> {
-      feed.open_in_list(f.xmlurl, ()=> {
+    emitter.on('open_in_list', (f: IFeed) => {
+      feed.open_in_list(f.xmlurl, () => {
       })
     })
-    emitter.on('refresh_list', (f: IFeed)=> {
+    emitter.on('refresh_list', (f: IFeed) => {
       feed.UpdateList()
     })
-    emitter.on('update_feed_list', (feeds: IFeed[])=> {
+    emitter.on('update_feed_list', (feeds: IFeed[]) => {
       this.setState({
         entries: feeds
       })
     })
   }
 
-  on_open_in_detail(entry: IFeed) {
+  async on_open_in_detail(entry: IFeed) {
+    var index = this.state.entries.indexOf(entry)
+    var readeds = this.state.entries.filter((v, i) => i < index);
+    articleStorage.MarkReadedMultiAsync(readeds.map((v) => v.id), (error) => {
+      console.log(error)
+    });
+    emitter.emit('mark_as_readed', readeds)
     emitter.emit('open_in_detail', entry)
   }
 
@@ -83,7 +89,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
   renderItem(entry: IFeed) {
     return (
       <ListItem key={entry.id}
-                onClick={()=>this.on_open_in_detail(entry)}
+                onClick={async ()=>await this.on_open_in_detail(entry)}
                 primaryText={entry.title}
       />
     );
@@ -104,7 +110,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
   render() {
     return (
       <List style={this.styles.columnScroll}>
-        {this.state.entries.map((feed)=>this.renderItem(feed))}
+        {this.state.entries.map((feed) => this.renderItem(feed))}
       </List>
     );
   }

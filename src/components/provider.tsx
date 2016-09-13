@@ -104,10 +104,7 @@ export class ProviderReact extends React.Component<IProviderProps,{}> {
   renderItem = (feed: IFeed) => {
     return <ListItem key={feed.id} primaryText={feed.title} onClick={this.onOpenInList(feed)}/>
   }
-
-  public listItem = (feed: IFeed) => {
-    return <ListItem key={feed.id} primaryText={feed.title} onClick={this.onOpenInList(feed)}/>;
-  }
+  
   style = {
     margin: 12,
   };
