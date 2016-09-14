@@ -25,30 +25,25 @@ export class FeedList extends React.Component<FeedListProps,{}> {
       this.open_in_list(f.xmlurl, () => {
       })
     })
-    emitter.on('refresh_list', (f: IFeed) => {
-      this.UpdateList()
-    })
-    emitter.on('update_feed_list', (feeds: IFeed[]) => {
-      this.setState({
-        entries: feeds
-      })
-    })
     emitter.on('article_readed', (id: any) => {
-      var a = this.state.entries.find((v) => v.id === id)
-      if (a) {
-        this.setState({
-          entries: _.without(this.state.entries, a)
-        })
-      }
+      this.removeFromList(id);
     })
     emitter.on('article_markreaded', (id: any) => {
-      var a = this.state.entries.find((v) => v.id === id)
-      if (a) {
-        this.setState({
-          entries: _.without(this.state.entries, a)
-        })
-      }
+      this.removeFromList(id);
     })
+  }
+
+  private removeFromList(id: any) {
+    var a = this.state.entries.find((v) => v.id === id)
+    if (a) {
+      this.setState({
+        entries: _.without(this.state.entries, a)
+      }, () => {
+        if (this.state.entries.length <= 0) {
+          this.UpdateList()
+        }
+      })
+    }
   }
 
   async open_in_list(xmlurl: string, callback) {
@@ -64,11 +59,9 @@ export class FeedList extends React.Component<FeedListProps,{}> {
 
   async UpdateList() {
     articleStorage.FindUnread({}, (error, results) => {
-      var d: IFeed[] = [];
-      for (var i = 0; i < results.rows.length; i++) {
-        d.push(results.rows.item(i))
-      }
-      emitter.emit('update_feed_list', d)
+      this.setState({
+        entries: results
+      })
     })
   }
 

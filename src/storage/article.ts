@@ -6,6 +6,7 @@ import {ISuccessCallback} from "./history";
 import {IArticle} from "../../definitions/storage/article";
 import reject = require("lodash/reject");
 import emitter from "../components/emitter";
+import {IFeed} from "../../definitions/storage/feed";
 const ArticleTableName = "ARTICLES3";
 enum Readed{
   Unread = 0,
@@ -13,11 +14,16 @@ enum Readed{
   MarkReaded = 2,
 }
 class ArticleStorage {
-  Add({title, link, feed_xmlurl}, callback) {
+  Add({title, link, feed_xmlurl}, callback: any) {
+    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed) VALUES (? ,?,?,?,?)`, [link, title, link, feed_xmlurl, Readed.Unread], callback);
+  }
+
+  private executeSql(s: string, extracted: any[], callback) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
     db.transaction((tx) => {
-      tx.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed) VALUES (? ,?,?,?,?)`, [link, title, link, feed_xmlurl, Readed.Unread], (transaction, results) => {
+      tx.executeSql(s, extracted, (transaction, results) => {
+        console.log(s)
         if (callback)callback();
       }, (transation, error) => {
         console.log(error);
@@ -39,7 +45,7 @@ class ArticleStorage {
 
     db.transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], (transaction, results) => {
-        emitter.emit("article_readed",id)
+        emitter.emit("article_readed", id)
         if (callback)callback(null)
       }, (transation, error) => {
         console.log(error);
@@ -54,7 +60,7 @@ class ArticleStorage {
     db.transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 2 WHERE id = ? `, [id], (transaction, results) => {
         console.log(`MarkUnreaded:${id}`)
-        emitter.emit("article_markreaded",id)
+        emitter.emit("article_markreaded", id)
         if (callback)callback(null)
       }, (transation, error) => {
         console.log(error);
@@ -125,12 +131,16 @@ class ArticleStorage {
     })
   }
 
-  FindUnread({}, callback) {
+  FindUnread({}, callback: ISuccessCallback<IFeed[]>) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
     db.transaction((tx) => {
-      tx.executeSql(`SELECT * FROM ${ArticleTableName}  WHERE readed = 0 ORDER BY rowid DESC LIMIT 100`, [], (tx, results) => {
-        callback(null, results);
+      tx.executeSql(`SELECT * FROM ${ArticleTableName}  WHERE readed = 0 ORDER BY rowid DESC LIMIT 10`, [], (tx, results) => {
+        var d: IFeed[] = [];
+        for (var i = 0; i < results.rows.length; i++) {
+          d.push(results.rows.item(i))
+        }
+        callback(null, d);
       }, null);
     });
   }
