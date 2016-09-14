@@ -12,7 +12,7 @@ import articleStorage from "../storage/article";
 import {doSegment} from "../functions/segment";
 import {View} from "react"
 import {Toggle} from "material-ui";
-
+import * as _ from "lodash"
 
 export interface DetailWebViewProps {
   style: any
@@ -37,6 +37,7 @@ export class Detail extends React.Component<IDetailProps, {}> {
     title: "",
     value: 0,
     nightMode: false,
+    p: 0.0,
   }
   styles = {
     webview: {
@@ -52,13 +53,16 @@ export class Detail extends React.Component<IDetailProps, {}> {
 
   componentWillMount() {
     emitter.on("open_in_detail", (entry: IArticle) => {
-      let segments: string[] = doSegment(entry.title);
-      console.log("segments:" + JSON.stringify(segments));
       this.setState({
         url: entry.link,
         title: entry.title,
-        segments: segments,
       });
+      articleStorage.calcP(entry)
+        .then((p) => {
+          this.setState({
+            p: p
+          })
+        })
     });
     emitter.on("detail:did-start-loading", () => {
       this.setState({
@@ -112,6 +116,7 @@ export class Detail extends React.Component<IDetailProps, {}> {
         <Toolbar>
           <ToolbarGroup firstChild={true}>
             <ToolbarTitle text={this.state.title}/>
+            <ToolbarTitle text={this.state.p.toString()}/>
           </ToolbarGroup>
           <ToolbarGroup>
             <Toggle

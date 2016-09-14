@@ -34,6 +34,9 @@ export class FeedList extends React.Component<FeedListProps,{}> {
     emitter.on('article_markreaded', (id: any) => {
       this.removeFromList(id);
     })
+    setInterval(() => {
+      articleStorage.CalcPrimary()
+    }, 1000 * 20); // 30 minus
   }
 
   private removeFromList(id: any) {
@@ -61,11 +64,10 @@ export class FeedList extends React.Component<FeedListProps,{}> {
   }
 
   async UpdateList() {
-    articleStorage.FindUnread({}, (error, results) => {
-      this.setState({
+    articleStorage.FindUnreadPromise()
+      .then(results => this.setState({
         entries: results
-      })
-    })
+      }))
   }
 
 
@@ -110,18 +112,25 @@ export class FeedList extends React.Component<FeedListProps,{}> {
       overflow: 'scroll'
     },
   }
-  onMarkReaded(){
+
+  onMarkReaded() {
     articleStorage.MarkReadedMultiAsync(this.state.entries.map((v) => v.id), (error) => {
       console.log(error)
     });
     emitter.emit('mark_as_readed', this.state.entries)
   }
+
+  onCalcPrimary() {
+    articleStorage.CalcPrimary()
+  }
+
   render() {
     return (
       <div className="column">
         <Toolbar>
           <ToolbarGroup>
             <RaisedButton label="Mark Readed(this page)" primary={true} onClick={this.onMarkReaded.bind(this)}/>
+            <RaisedButton label="Calc Primary" primary={true} onClick={this.onCalcPrimary.bind(this)}/>
           </ToolbarGroup>
         </Toolbar>
         <List style={this.styles.columnScroll}>
