@@ -36,7 +36,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
     })
     setInterval(() => {
       articleStorage.CalcPrimary()
-    }, 1000 * 20); // 30 minus
+    }, 1000 * 10); // 30 minus
   }
 
   private removeFromList(id: any) {
@@ -97,6 +97,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
       <ListItem key={entry.id}
                 onClick={async ()=>await this.on_open_in_detail(entry)}
                 primaryText={entry.title}
+                secondaryText={entry.p.toString()}
       />
     );
   }
@@ -129,6 +130,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
       <div className="column">
         <Toolbar>
           <ToolbarGroup>
+            <RaisedButton label="Refresh" primary={true} onClick={this.onRefresh.bind(this)}/>
             <RaisedButton label="Mark Readed(this page)" primary={true} onClick={this.onMarkReaded.bind(this)}/>
             <RaisedButton label="Calc Primary" primary={true} onClick={this.onCalcPrimary.bind(this)}/>
           </ToolbarGroup>

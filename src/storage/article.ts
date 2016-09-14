@@ -8,7 +8,7 @@ import reject = require("lodash/reject");
 import emitter from "../components/emitter";
 import {IFeed} from "../../definitions/storage/feed";
 import {doSegment} from "../functions/segment";
-const ArticleTableName = "ARTICLES4";
+const ArticleTableName = "ARTICLES6";
 enum Readed{
   Unread = 0,
   Readed = 1,
@@ -16,7 +16,7 @@ enum Readed{
 }
 class ArticleStorage {
   Add({title, link, feed_xmlurl}, callback: any) {
-    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p) VALUES (? ,?,?,?,?,0)`, [link, title, link, feed_xmlurl, Readed.Unread], callback);
+    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion) VALUES (? ,?,?,?,?,0,0)`, [link, title, link, feed_xmlurl, Readed.Unread], callback);
   }
 
   private executeSql(s: string, extracted: any[], callback) {
@@ -46,6 +46,7 @@ class ArticleStorage {
 
     db.transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], (transaction, results) => {
+        this.incPVersion()
         emitter.emit("article_readed", id)
         if (callback)callback(null)
       }, (transation, error) => {
@@ -61,6 +62,7 @@ class ArticleStorage {
     db.transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 2 WHERE id = ? `, [id], (transaction, results) => {
         console.log(`MarkUnreaded:${id}`)
+        this.incPVersion()
         emitter.emit("article_markreaded", id)
         if (callback)callback(null)
       }, (transation, error) => {
@@ -92,7 +94,7 @@ class ArticleStorage {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
     db.transaction((tx) => {
-      tx.executeSql(`CREATE TABLE IF NOT EXISTS ${ArticleTableName} (id UNIQUE, title, link, feed_xmlurl,readed,p)`);
+      tx.executeSql(`CREATE TABLE IF NOT EXISTS ${ArticleTableName} (id UNIQUE, title, link, feed_xmlurl,readed,p,pversion)`);
       console.log("<p>created </p>");
     });
   }
@@ -149,15 +151,16 @@ class ArticleStorage {
     })
   }
 
-  FindUnCalePromise() {
+  FindUnCalePromise(pversion: number) {
     return new Promise((resolve, reject) => {
       let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
       db.transaction(tx => {
-        tx.executeSql(`SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND p = 0 ORDER BY p DESC,rowid DESC LIMIT 10`, [], (tx, results) => {
+        tx.executeSql(`SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND p = 0 AND pversion < ? ORDER BY rowid DESC LIMIT 10`, [pversion], (tx, results) => {
           var d: IFeed[] = [];
           for (var i = 0; i < results.rows.length; i++) {
             d.push(results.rows.item(i))
           }
+          console.log(`pversion:${pversion},FindUnCalePromise:${JSON.stringify(d)}`)
           resolve(d)
         }, (tx, error) => {
           reject(error);
@@ -248,23 +251,39 @@ class ArticleStorage {
     return pRead;
   }
 
-  updateP(id, p) {
+  updateP(id: string, p: number, pversion: number) {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
     db.transaction((tx) => {
-      tx.executeSql(`UPDATE ${ArticleTableName} SET p = ? WHERE id=? `, [p, id], (transaction, results) => {
+      tx.executeSql(`UPDATE ${ArticleTableName} SET p=?,pversion=? WHERE id=? `, [p, pversion, id], (transaction, results) => {
       }, (transation, error) => {
       });
     });
   }
 
+  incPVersion() {
+    var pversion = this.getPVersion()
+    localStorage.setItem("pversion", (pversion + 1).toString())
+  }
+
+  getPVersion() {
+    var pversion = localStorage.getItem("pversion")
+    if (pversion) {
+      return parseInt(pversion)
+    } else {
+      localStorage.setItem("pversion", "0")
+      return 0
+    }
+  }
+
   CalcPrimary() {
-    this.FindUnCalePromise()
+    var pversion = this.getPVersion()
+    this.FindUnCalePromise(pversion)
       .then(articles => {
         for (var i = 0; i < articles.length; i++) {
           var article = articles[i];
           this.calcP(article)
             .then((p) => {
-              this.updateP(article.id, p)
+              this.updateP(article.id, p, pversion)
             })
         }
       })
