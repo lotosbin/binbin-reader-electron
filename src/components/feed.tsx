@@ -5,6 +5,9 @@ import emitter from './emitter'
 import {IFeed} from "../../definitions/storage/feed";
 import {List, ListItem} from "material-ui/List"
 import * as _ from 'lodash'
+import {Toolbar} from "material-ui";
+import {ToolbarGroup} from "material-ui";
+import {RaisedButton} from "material-ui";
 export interface FeedListProps {
 
 }
@@ -107,12 +110,24 @@ export class FeedList extends React.Component<FeedListProps,{}> {
       overflow: 'scroll'
     },
   }
-
+  onMarkReaded(){
+    articleStorage.MarkReadedMultiAsync(this.state.entries.map((v) => v.id), (error) => {
+      console.log(error)
+    });
+    emitter.emit('mark_as_readed', this.state.entries)
+  }
   render() {
     return (
-      <List style={this.styles.columnScroll}>
-        {this.state.entries.map((feed) => this.renderItem(feed))}
-      </List>
+      <div className="column">
+        <Toolbar>
+          <ToolbarGroup>
+            <RaisedButton label="Mark Readed(this page)" primary={true} onClick={this.onMarkReaded.bind(this)}/>
+          </ToolbarGroup>
+        </Toolbar>
+        <List style={this.styles.columnScroll}>
+          {this.state.entries.map((feed) => this.renderItem(feed))}
+        </List>
+      </div>
     );
   }
 }
