@@ -8,6 +8,7 @@ import reject = require("lodash/reject");
 import emitter from "../functions/emitter";
 import {IFeed} from "../../definitions/storage/feed";
 import {doSegment} from "../functions/segment";
+import {error} from "util";
 const ArticleTableName = "ARTICLES6";
 enum Readed{
   Unread = 0,
@@ -87,7 +88,12 @@ class ArticleStorage {
         if (callback) {
           callback(null, null);
         }
-      });
+      })
+      .catch((error) => {
+        if (callback)
+          callback(error)
+      })
+    ;
   }
 
   Init() {
@@ -160,7 +166,7 @@ class ArticleStorage {
           for (var i = 0; i < results.rows.length; i++) {
             d.push(results.rows.item(i))
           }
-          console.log(`pversion:${pversion},FindUnCalePromise:${JSON.stringify(d)}`)
+          // console.log(`pversion:${pversion},FindUnCalePromise:${JSON.stringify(d)}`)
           resolve(d)
         }, (tx, error) => {
           reject(error);
@@ -251,13 +257,34 @@ class ArticleStorage {
     return pRead;
   }
 
-  updateP(id: string, p: number, pversion: number) {
+  updateP(id: string, p: number, pversion: number, callback: any) {
+    console.log(`updateP(id:${id},p:${p},pversion:${pversion})`)
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
     db.transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET p=?,pversion=? WHERE id=? `, [p, pversion, id], (transaction, results) => {
       }, (transation, error) => {
+        if (callback) {
+          if (error) {
+            callback(error)
+          }
+          else {
+            callback(null)
+          }
+        }
       });
     });
+  }
+
+  updatePPromise(id: string, p: number, pversion: number) {
+    return new Promise((resolve, reject) => {
+      this.updateP(id, p, pversion, (error) => {
+          if (error)
+            reject(error)
+          else
+            resolve({})
+        }
+      )
+    })
   }
 
   incPVersion() {
@@ -275,17 +302,29 @@ class ArticleStorage {
     }
   }
 
+  calcPrimarying = false
+
   CalcPrimary() {
+    if (this.calcPrimarying)return;
+    this.calcPrimarying = true;
     var pversion = this.getPVersion()
     this.FindUnCalePromise(pversion)
-      .then(articles => {
+      .then((articles: IArticle[]) => {
         for (var i = 0; i < articles.length; i++) {
           var article = articles[i];
           this.calcP(article)
-            .then((p) => {
-              this.updateP(article.id, p, pversion)
+            .then((p: number) => {
+              return this.updatePPromise(article.id, p, pversion)
+            })
+            .catch((reason: any) => {
+              console.error(reason)
             })
         }
+        this.calcPrimarying = false
+      })
+      .catch((reason: any) => {
+        this.calcPrimarying = false
+        console.error(reason)
       })
   }
 }

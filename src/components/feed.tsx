@@ -35,9 +35,9 @@ export class FeedList extends React.Component<FeedListProps,{}> {
     emitter.on('article_markreaded', (id: any) => {
       this.removeFromList(id);
     })
-    // setInterval(() => {
-    //   articleStorage.CalcPrimary()
-    // }, 1000 * 10); // 30 minus
+    setInterval(() => {
+      articleStorage.CalcPrimary()
+    }, 1000 * 30); 
   }
 
   private removeFromList(id: any) {

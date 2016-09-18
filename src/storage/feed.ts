@@ -38,24 +38,13 @@ class FeedStorage extends Storage<IFeed> {
     let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
     db.transaction((tx) => {
-      tx.executeSql("SELECT * FROM FEEDS", [], (tx, results) => {
+      tx.executeSql("SELECT * FROM FEEDS LIMIT 10", [], (tx, results) => {
         var d: IFeed[] = [];
         for (var i = 0; i < results.rows.length; i++) {
           d.push(results.rows.item(i))
         }
         if (callback)callback(null, d);
       }, null);
-    });
-  }
-
-  importOpml(fileName: string) {
-    fs.readFile(fileName, "utf-8", (err, data) => {
-      opmlToJSON(data, (err, json) => {
-        let rss = jsonPath.resolve(json, "/children[*]/children[*]");
-        feedStorage.AddRange(rss, () => {
-
-        });
-      });
     });
   }
 }
