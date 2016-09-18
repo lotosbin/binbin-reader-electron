@@ -130,7 +130,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
             <RaisedButton label="Calc Primary" primary={true} onClick={this.onCalcPrimary.bind(this)}/>
           </ToolbarGroup>
         </Toolbar>
-        <List style={this.styles.columnScroll}>
+        <List>
           {this.state.entries.map((feed) => this.renderItem(feed))}
         </List>
       </div>
