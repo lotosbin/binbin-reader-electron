@@ -5,7 +5,7 @@ import * as _ from "lodash";
 import {ISuccessCallback} from "./history";
 import {IArticle} from "../../definitions/storage/article";
 import reject = require("lodash/reject");
-import emitter from "../components/emitter";
+import emitter from "../functions/emitter";
 import {IFeed} from "../../definitions/storage/feed";
 import {doSegment} from "../functions/segment";
 const ArticleTableName = "ARTICLES6";

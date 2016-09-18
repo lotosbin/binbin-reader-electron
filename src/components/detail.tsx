@@ -7,26 +7,32 @@ import LinearProgress from "material-ui/LinearProgress";
 import {IArticle} from "../../definitions/storage/article";
 import * as React from "react";
 import {shell} from "electron";
-import emitter from "./emitter";
+import emitter from "../functions/emitter";
 import articleStorage from "../storage/article";
-import {doSegment} from "../functions/segment";
-import {View} from "react"
 import {Toggle} from "material-ui";
-import * as _ from "lodash"
-
-export interface DetailWebViewProps {
-  style: any
-}
-export class DetailWebView extends React.Component<DetailWebViewProps, {}> {
-  state = {
-    url: "http://www.yuanjingtech.com",
-  };
-
-  public componentWillMount() {
-
+export class DetailProgress extends React.Component<{},{}>{
+  state={
+    value: 0,
   }
-
-
+  componentDidMount(){
+    emitter.on("detail:did-start-loading", () => {
+      this.setState({
+        value: 20,
+      });
+    });
+    emitter.on("detail:did-stop-loading", () => {
+      this.setState({
+        value: 100,
+      });
+    });
+  }
+  render(){
+    return (
+      <LinearProgress
+        mode="determinate"
+        value={this.state.value}/>
+    );
+  }
 }
 export interface IDetailProps {
 
@@ -35,7 +41,6 @@ export class Detail extends React.Component<IDetailProps, {}> {
   state = {
     url: "http://www.yuanjingtech.com",
     title: "",
-    value: 0,
     nightMode: false,
     p: 0.0,
   }
@@ -63,16 +68,6 @@ export class Detail extends React.Component<IDetailProps, {}> {
             p: p
           })
         })
-    });
-    emitter.on("detail:did-start-loading", () => {
-      this.setState({
-        value: 20,
-      });
-    });
-    emitter.on("detail:did-stop-loading", () => {
-      this.setState({
-        value: 100,
-      });
     });
     emitter.on("open_in_detail", (entry: IArticle) => {
       this.setState({
@@ -130,9 +125,7 @@ export class Detail extends React.Component<IDetailProps, {}> {
             <RaisedButton label="Open In Browser" primary={true} onClick={this.onOpenInBrowser.bind(this)}/>
           </ToolbarGroup>
         </Toolbar>
-        <LinearProgress
-          mode="determinate"
-          value={this.state.value}/>
+        <DetailProgress></DetailProgress>
         <webview id="webview"
                  style={this.styles.webview}
                  src={this.state.url}

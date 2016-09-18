@@ -1,4 +1,3 @@
-import provider from "./components/provider";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {TopBar} from "./components/topbar"
@@ -10,11 +9,11 @@ import {Detail} from "./components/detail"
 injectTapEventPlugin();
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {SideBar} from "./components/sidebar";
+import {SideBar} from "./layouts/sidebar";
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import emitter from "./components/emitter";
+import emitter from "./functions/emitter";
 class Main extends React.Component<{},{}> {
   state = {
     currentTheme: getMuiTheme(lightBaseTheme)

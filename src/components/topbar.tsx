@@ -5,7 +5,7 @@ import * as React from "react";
 import {
   AppBar
 } from "material-ui";
-import emitter from "./emitter";
+import emitter from "../functions/emitter";
 import {Toggle} from "material-ui";
 
 export interface TopBarProps {

@@ -5,11 +5,8 @@ import  {
   Paper
 } from 'material-ui';
 import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
 
 const recentsIcon = <FontIcon className="material-icons">GitHub</FontIcon>;
-const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
-const nearbyIcon = <IconLocationOn />;
 import {shell} from 'electron'
 
 export interface BottomNavigationExampleSimpleProps {

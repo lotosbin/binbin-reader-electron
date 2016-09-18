@@ -5,31 +5,14 @@ import * as fs  from "fs";
 import * as opmlToJSON from "opml-to-json";
 import * as jsonPath from "json-path";
 import feedStorage from "../storage/feed";
-import feedService from "./feed";
+import feedService from "../services/feed";
 import * as _ from "lodash";
-import emitter from "./emitter";
+import emitter from "../functions/emitter";
 import {List} from "material-ui";
 import {ListItem} from "material-ui";
 import {IFeed} from "../../definitions/storage/feed";
 import {ICallback} from "../../definitions/common"
 
-class Provider {
-
-  public UpdateFeedsArticles(callback: ICallback<any, any>) {
-    feedStorage.Find({}, function (error, feeds) {
-      Promise.all(_.map(feeds, (feed) => new Promise((resolve) => {
-        feedService.GrabAndUpdateArticles(feed.xmlurl, function (error) {
-          resolve({});
-        });
-      })))
-        .then(() => {
-          if (callback) {
-            callback(null, null);
-          }
-        });
-    });
-  }
-}
 export interface IProviderProps {
 
 }
@@ -37,7 +20,7 @@ export interface IProviderState {
   open: boolean,
   data: IFeed[]
 }
-export class ProviderReact extends React.Component<IProviderProps,{}> {
+export class ProviderList extends React.Component<IProviderProps,{}> {
   state: IProviderState = {
     data: [],
     open: false,
@@ -54,32 +37,9 @@ export class ProviderReact extends React.Component<IProviderProps,{}> {
         data: results
       })
     });
-
-    setInterval(() => {
-      this.UpdateFeedsArticles();
-    }, 1000 * 60 * 30); // 30 minus
   }
 
   componentDidMount() {
-  }
-
-  updating = false;
-
-  UpdateFeedsArticles() {
-    if (!this.updating) {
-      this.updating = true;
-      feedStorage.Find({}, function (error, feeds) {
-        var promises = _.map(feeds, (feed) => new Promise((resolve) => {
-          feedService.GrabAndUpdateArticles(feed.xmlurl, (error)=> {
-            resolve({});
-          });
-        }));
-        Promise.all(promises)
-          .then(() => {
-            this.updating = true
-          });
-      });
-    }
   }
 
   onImport() {
@@ -117,7 +77,3 @@ export class ProviderReact extends React.Component<IProviderProps,{}> {
     );
   }
 }
-let provider = new Provider();
-
-
-export  default provider;

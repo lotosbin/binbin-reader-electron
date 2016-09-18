@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
+    "electron": "registry:env/electron#0.37.6+20160909065630",
     "github-electron": "registry:dt/github-electron#1.2.5+20160812193136",
     "lodash": "registry:dt/lodash#4.14.0+20160817155621",
     "material-ui": "registry:dt/material-ui#0.15.1+20160818062356",

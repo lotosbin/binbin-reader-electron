@@ -1,13 +1,14 @@
 import * as React from "react"
 import  * as reader from 'feed-reader'
 import articleStorage from '../storage/article'
-import emitter from './emitter'
+import emitter from '../functions/emitter'
 import {IFeed} from "../../definitions/storage/feed";
 import {List, ListItem} from "material-ui/List"
 import * as _ from 'lodash'
 import {Toolbar} from "material-ui";
 import {ToolbarGroup} from "material-ui";
 import {RaisedButton} from "material-ui";
+import feedService from "../services/feed";
 export interface FeedListProps {
 
 }
@@ -34,9 +35,9 @@ export class FeedList extends React.Component<FeedListProps,{}> {
     emitter.on('article_markreaded', (id: any) => {
       this.removeFromList(id);
     })
-    setInterval(() => {
-      articleStorage.CalcPrimary()
-    }, 1000 * 10); // 30 minus
+    // setInterval(() => {
+    //   articleStorage.CalcPrimary()
+    // }, 1000 * 10); // 30 minus
   }
 
   private removeFromList(id: any) {
@@ -54,7 +55,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
 
   async open_in_list(xmlurl: string, callback) {
     try {
-      this.GrabAndUpdateArticles(xmlurl, () => {
+      feedService.GrabAndUpdateArticles(xmlurl, () => {
       });
       await this.UpdateList()
       if (callback)callback(null)
@@ -71,12 +72,6 @@ export class FeedList extends React.Component<FeedListProps,{}> {
   }
 
 
-  async GrabAndUpdateArticles(xmlurl: string, callback) {
-    let feed = await reader.parse(xmlurl)
-    articleStorage.AddRange(feed.entries, xmlurl, () => {
-      if (callback)callback();
-    })
-  }
 
   async on_open_in_detail(entry: IFeed) {
     var index = this.state.entries.indexOf(entry)

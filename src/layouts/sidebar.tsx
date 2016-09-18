@@ -4,9 +4,9 @@ import {Component} from 'react';
 import {Tabs, Tab} from 'material-ui/Tabs';
 // From https://github.com/oliviertassinari/react-swipeable-views
 import SwipeableViews from 'react-swipeable-views';
-import {FeedList} from "./feed";
-import {HistoryList} from "./history";
-import {ProviderReact} from "./provider";
+import {FeedList} from "../components/feed";
+import {HistoryList} from "../components/history";
+import {ProviderList} from "../components/provider";
 const styles = {
   headline: {
     fontSize: 24,
@@ -56,7 +56,7 @@ export class SideBar extends Component<ISideBarProps,{}> {
             <HistoryList></HistoryList>
           </div>
           <div style={styles.column}>
-            <ProviderReact></ProviderReact>
+            <ProviderList></ProviderList>
           </div>
         </SwipeableViews>
       </div>

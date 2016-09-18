@@ -1,7 +1,7 @@
 /**
  * Created by liubinbin on 16/08/2016.
  */
-import emitter from "./emitter";
+import emitter from "../functions/emitter";
 import * as React from "react";
 import {IArticle} from "../../definitions/storage/article";
 import * as HistoryStorage from "../storage/history"
