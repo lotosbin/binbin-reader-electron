@@ -37,7 +37,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
     })
     setInterval(() => {
       articleStorage.CalcPrimary()
-    }, 1000 * 30); 
+    }, 1000 * 5); 
   }
 
   private removeFromList(id: any) {

@@ -9,28 +9,19 @@ import emitter from "../functions/emitter";
 import {IFeed} from "../../definitions/storage/feed";
 import {doSegment} from "../functions/segment";
 import {error} from "util";
+import {Storage} from "./storagebase"
 const ArticleTableName = "ARTICLES6";
 enum Readed{
   Unread = 0,
   Readed = 1,
   MarkReaded = 2,
 }
-class ArticleStorage {
-  Add({title, link, feed_xmlurl}, callback: any) {
-    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion) VALUES (? ,?,?,?,?,0,0)`, [link, title, link, feed_xmlurl, Readed.Unread], callback);
+class ArticleStorage extends Storage<IArticle> {
+  Find({}:{}, callback: ISuccessCallback<IArticle[]>): void {
   }
 
-  private executeSql(s: string, extracted: any[], callback) {
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-
-    db.transaction((tx) => {
-      tx.executeSql(s, extracted, (transaction, results) => {
-        console.log(s)
-        if (callback)callback();
-      }, (transation, error) => {
-        console.log(error);
-      });
-    });
+  Add({title, link, feed_xmlurl}, callback: any) {
+    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion) VALUES (? ,?,?,?,?,0,0)`, [link, title, link, feed_xmlurl, Readed.Unread], callback);
   }
 
   AddAsync({title, link, feed_xmlurl}) {
@@ -43,9 +34,7 @@ class ArticleStorage {
 
   Read({id}, callback) {
     console.log("read:" + id);
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-
-    db.transaction((tx) => {
+    this.open().transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], (transaction, results) => {
         this.incPVersion()
         emitter.emit("article_readed", id)
@@ -58,9 +47,7 @@ class ArticleStorage {
   }
 
   MarkReaded({id}, callback) {
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-
-    db.transaction((tx) => {
+    this.open().transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 2 WHERE id = ? `, [id], (transaction, results) => {
         console.log(`MarkUnreaded:${id}`)
         this.incPVersion()
@@ -97,9 +84,8 @@ class ArticleStorage {
   }
 
   Init() {
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
 
-    db.transaction((tx) => {
+    this.open().transaction((tx) => {
       tx.executeSql(`CREATE TABLE IF NOT EXISTS ${ArticleTableName} (id UNIQUE, title, link, feed_xmlurl,readed,p,pversion)`);
       console.log("<p>created </p>");
     });
@@ -123,9 +109,7 @@ class ArticleStorage {
   }
 
   Get(id: string, callback: ISuccessCallback < IArticle >) {
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-
-    db.transaction((tx) => {
+    this.open().transaction((tx) => {
       tx.executeSql(`SELECT * FROM ${ArticleTableName} WHERE id=?`, [id], (tx, results) => {
         if (callback)callback(null, results);
       }, null);
@@ -142,8 +126,7 @@ class ArticleStorage {
 
   FindUnreadPromise() {
     return new Promise((resolve, reject) => {
-      let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-      db.transaction(tx => {
+      this.open().transaction(tx => {
         tx.executeSql(`SELECT * FROM ${ArticleTableName}  WHERE readed = 0 ORDER BY p DESC,rowid DESC LIMIT 10`, [], (tx, results) => {
           var d: IFeed[] = [];
           for (var i = 0; i < results.rows.length; i++) {
@@ -159,8 +142,7 @@ class ArticleStorage {
 
   FindUnCalePromise(pversion: number) {
     return new Promise((resolve, reject) => {
-      let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-      db.transaction(tx => {
+      this.open().transaction(tx => {
         tx.executeSql(`SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND p = 0 AND pversion < ? ORDER BY rowid DESC LIMIT 10`, [pversion], (tx, results) => {
           var d: IFeed[] = [];
           for (var i = 0; i < results.rows.length; i++) {
@@ -177,8 +159,7 @@ class ArticleStorage {
 
   ReadedAndMarkReadedCount() {
     return new Promise((resolve, reject) => {
-      let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-      db.transaction((tx) => {
+      this.open().transaction((tx) => {
         let sql = `SELECT * FROM ${ArticleTableName} WHERE (readed = 1 OR readed = 2)`;
         tx.executeSql(sql, [], (tx, results) => {
           resolve(results.rows.length)
@@ -191,8 +172,7 @@ class ArticleStorage {
 
   ReadedAndMarkReadedSegmentCount(segment: string) {
     return new Promise((resolve, reject) => {
-      let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-      db.transaction((tx) => {
+      this.open().transaction((tx) => {
         let sql = `SELECT * FROM ${ArticleTableName} WHERE (readed = 1 OR readed = 2) AND title like ?`;
         tx.executeSql(sql, [`%${segment}%`], (tx, results) => {
           resolve(results.rows.length)
@@ -205,8 +185,7 @@ class ArticleStorage {
 
   ReadedCount() {
     return new Promise((resolve, reject) => {
-      let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-      db.transaction((tx) => {
+      this.open().transaction((tx) => {
         tx.executeSql(`SELECT * FROM ${ArticleTableName} WHERE readed = 1 `, [], (tx, results) => {
           resolve(results.rows.length)
         }, (transaction, error) => {
@@ -218,8 +197,7 @@ class ArticleStorage {
 
   ReadedSegmentCount(segment: string) {
     return new Promise((resolve, reject) => {
-      let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-      db.transaction((tx) => {
+      this.open().transaction((tx) => {
         tx.executeSql(`SELECT * FROM ${ArticleTableName} WHERE readed = 1 AND title LIKE ?`, [`%${segment}%`], (tx, results) => {
           resolve(results.rows.length)
         }, (transaction, error) => {
@@ -259,8 +237,7 @@ class ArticleStorage {
 
   updateP(id: string, p: number, pversion: number, callback: any) {
     console.log(`updateP(id:${id},p:${p},pversion:${pversion})`)
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-    db.transaction((tx) => {
+    this.open().transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET p=?,pversion=? WHERE id=? `, [p, pversion, id], (transaction, results) => {
       }, (transation, error) => {
         if (callback) {
