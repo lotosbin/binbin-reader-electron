@@ -37,7 +37,7 @@ class Main extends React.Component<{},{}> {
   render() {
     return (
       <MuiThemeProvider muiTheme={this.state.currentTheme}>
-        <div style={{display:'flex',flexDirection:'column'}}>
+        <div style={{display:'flex',flexDirection:'column',height:'100%'}}>
           <div id="topbar" className="" style={{display: 'flex',flexDirection: 'row', flex:'none'}}>
             <TopBar />
           </div>
