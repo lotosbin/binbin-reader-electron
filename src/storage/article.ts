@@ -233,7 +233,25 @@ class ArticleStorage extends Storage<IArticle> {
     })
   }
 
-  calcP(entry: IArticle) {
+  async calcP2(entry: IArticle): Promise<number> {
+    // pRead_Segment1..n = (Count(All)/Count(Read))^(n-1) * Count(Segment1|Read)..Count(Segment_n|Read) / (Count(Segment1)*..*Count(Segment_n))
+    var AllCount = await articleStorage.ReadedAndMarkReadedCount()
+    var ReadCount = await articleStorage.ReadedCount()
+    var up = 1
+    var down = 1
+    let segments: string[] = doSegment(entry.title);
+    for (var i = 0; i < segments.length; i++) {
+      var segment = segments[i];
+      var SegmentReadCount = await articleStorage.ReadedSegmentCount(segment)
+      var SegmentCount = await articleStorage.ReadedAndMarkReadedSegmentCount(segment)
+      up = up * Math.max(1, parseInt(`${SegmentReadCount}`))
+      down = down * Math.max(1, parseInt(`${SegmentCount}`))
+    }
+    var pRead_Segments = Math.pow(parseFloat(`${AllCount}`) / Math.max(1, parseFloat(`${ReadCount}`)), segments.length - 1) * up / down
+    return pRead_Segments
+  }
+
+  calcP(entry: IArticle): Promise<number> {
     return new Promise((resolve) => {
       let segments: string[] = doSegment(entry.title);
       Promise.all(segments.map(segment => new Promise((resolve, reject) => this.calc(segment).then(pa => resolve(pa)))))
@@ -245,10 +263,10 @@ class ArticleStorage extends Storage<IArticle> {
   }
 
   async calc(segment: string) {
-    // pRead_Segment = pRead * pSegment_Read / pSegment
+    // pRead_Segment = pRead * pSegment1_Read *..* pSegment2_Read / pSegment1 *..* pSegment2
     // pRead = ReadCount/AllCount
-    // pSegment_Read = SegmentReadCount / ReadCount
-    // pSegment = SegmentCount / AllCount
+    // pSegment1_Read = Segment1ReadCount / ReadCount
+    // pSegment1 = Segment1Count / AllCount
     var AllCount = await articleStorage.ReadedAndMarkReadedCount()
     var ReadCount = await articleStorage.ReadedCount()
     var SegmentCount = await articleStorage.ReadedAndMarkReadedSegmentCount(segment)
@@ -315,7 +333,7 @@ class ArticleStorage extends Storage<IArticle> {
       .then((articles: IArticle[]) => {
         for (var i = 0; i < articles.length; i++) {
           var article = articles[i];
-          this.calcP(article)
+          this.calcP2(article)
             .then((p: number) => {
               return this.updatePPromise(article.id, p, pversion)
             })

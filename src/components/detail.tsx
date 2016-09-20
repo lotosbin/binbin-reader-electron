@@ -10,11 +10,12 @@ import {shell} from "electron";
 import emitter from "../functions/emitter";
 import articleStorage from "../storage/article";
 import {Toggle} from "material-ui";
-export class DetailProgress extends React.Component<{},{}>{
-  state={
+export class DetailProgress extends React.Component<{},{}> {
+  state = {
     value: 0,
   }
-  componentDidMount(){
+
+  componentDidMount() {
     emitter.on("detail:did-start-loading", () => {
       this.setState({
         value: 20,
@@ -26,7 +27,8 @@ export class DetailProgress extends React.Component<{},{}>{
       });
     });
   }
-  render(){
+
+  render() {
     return (
       <LinearProgress
         mode="determinate"
@@ -61,17 +63,6 @@ export class Detail extends React.Component<IDetailProps, {}> {
       this.setState({
         url: entry.link,
         title: entry.title,
-      });
-      articleStorage.calcP(entry)
-        .then((p) => {
-          this.setState({
-            p: p
-          })
-        })
-    });
-    emitter.on("open_in_detail", (entry: IArticle) => {
-      this.setState({
-        url: entry.link,
       });
       articleStorage.Read({id: this.state.url}, () => {
       });
