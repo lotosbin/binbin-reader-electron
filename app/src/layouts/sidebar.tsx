@@ -11,9 +11,9 @@ import {Dashboard} from "../components/dashboard";
 const styles = {
   headline: {
     fontSize: 24,
+    fontWeight: 400,
     paddingTop: 16,
     marginBottom: 12,
-    fontWeight: 400,
   },
   column: {
     display: 'flex',
@@ -39,7 +39,9 @@ export class SideBar extends Component<ISideBarProps,{}> {
     return (
       <div style={styles.column}>
         <Tabs
-          onChange={(value:number)=>this.handleChange(value)}
+          onChange={(value: number) => {
+  return this.handleChange(value);
+}}
           value={this.state.slideIndex}
         >
           <Tab label="Unread" value={0}/>
@@ -48,7 +50,9 @@ export class SideBar extends Component<ISideBarProps,{}> {
         </Tabs>
         <SwipeableViews
           index={this.state.slideIndex}
-          onChangeIndex={(value:number)=>this.handleChange(value)}
+          onChangeIndex={(value: number) => {
+  return this.handleChange(value);
+}}
         >
           <div style={styles.column}>
             <FeedList></FeedList>
