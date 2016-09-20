@@ -162,10 +162,14 @@ class ArticleStorage extends Storage<IArticle> {
     })
   }
 
-  FindUnCalePromise(pversion: number) {
+  FindUnCalePromise(pversion: number, limit?: number) {
     return new Promise((resolve, reject) => {
       this.open().transaction(tx => {
-        tx.executeSql(`SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND p = 0 AND pversion < ? ORDER BY rowid DESC LIMIT 10`, [pversion], (tx, results) => {
+        let sql = `SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND p = 0 AND pversion < ? ORDER BY rowid DESC`
+        if (limit) {
+          sql = `${sql} LIMIT ${limit}`;
+        }
+        tx.executeSql(sql, [pversion], (tx, results) => {
           var d: IFeed[] = [];
           for (var i = 0; i < results.rows.length; i++) {
             d.push(results.rows.item(i))
@@ -307,7 +311,7 @@ class ArticleStorage extends Storage<IArticle> {
     if (this.calcPrimarying)return;
     this.calcPrimarying = true;
     var pversion = this.getPVersion()
-    this.FindUnCalePromise(pversion)
+    this.FindUnCalePromise(pversion, 20)
       .then((articles: IArticle[]) => {
         for (var i = 0; i < articles.length; i++) {
           var article = articles[i];

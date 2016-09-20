@@ -11,6 +11,7 @@ export class Dashboard extends React.Component<{},{}> {
     feedCount: 0,
     articleCount: 0,
     articleReadedCount: 0,
+    articleNeedParseCount: 0,
   }
 
   componentDidMount() {
@@ -25,6 +26,11 @@ export class Dashboard extends React.Component<{},{}> {
     articleStorage.ReadedCount()
       .then((count: number) => {
         this.setState({articleReadedCount: count})
+      })
+    var pversion = articleStorage.getPVersion()
+    articleStorage.FindUnCalePromise(pversion)
+      .then((articles: any[]) => {
+        this.setState({articleNeedParseCount: articles.length})
       })
   }
 
@@ -44,6 +50,9 @@ export class Dashboard extends React.Component<{},{}> {
           max={this.state.articleCount}
           value={this.state.articleReadedCount}/>
         <span>{this.state.articleReadedCount}/{this.state.articleCount}</span>
+        <h1>parse</h1>
+        <span>{this.state.articleNeedParseCount}</span>
+
       </div>
     );
   }
