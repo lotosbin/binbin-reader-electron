@@ -10,7 +10,7 @@ import {IFeed} from "../../definitions/storage/feed";
 import {doSegment} from "../functions/segment";
 import {error} from "util";
 import {Storage} from "./storagebase"
-const ArticleTableName = "ARTICLES6";
+const ArticleTableName = "ARTICLES";
 enum Readed{
   Unread = 0,
   Readed = 1,

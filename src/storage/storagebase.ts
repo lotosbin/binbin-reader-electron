@@ -4,7 +4,19 @@ export abstract class Storage<T> {
 
   protected open() {
     if (!this.db) {
-      this.db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
+      this.db = openDatabase("mydb", "", "Test DB", 2 * 1024 * 1024);
+      if (this.db.version === "1.0") {
+        this.db.changeVersion("1.0", "2", (tx) => {
+          tx.executeSql("ALTER TABLE ARTICLES6 ADD COLUMN segments")
+        })
+      }
+      if (this.db.version === "2") {
+        this.db.changeVersion("2", "3", tx => {
+          tx.executeSql("DROP TABLE ARTICLES")
+          tx.executeSql("DROP TABLE ARTICLES3")
+          tx.executeSql("ALTER TABLE ARTICLES6 RENAME TO ARTICLES")
+        })
+      }
     }
     return this.db;
   }
@@ -19,6 +31,7 @@ export abstract class Storage<T> {
       });
     });
   }
+
   abstract Find({}, callback: ISuccessCallback<T[]>): void;
 
   FindAsync() {
