@@ -7,6 +7,7 @@ import SwipeableViews from 'react-swipeable-views';
 import {FeedList} from "../components/feed";
 import {HistoryList} from "../components/history";
 import {ProviderList} from "../components/provider";
+import {Dashboard} from "../components/dashboard";
 const styles = {
   headline: {
     fontSize: 24,
@@ -44,6 +45,7 @@ export class SideBar extends Component<ISideBarProps,{}> {
           <Tab label="Unread" value={0}/>
           <Tab label="History" value={1}/>
           <Tab label="Provider" value={2}/>
+          <Tab label="Dashboard" value={3}/>
         </Tabs>
         <SwipeableViews
           index={this.state.slideIndex}
@@ -57,6 +59,9 @@ export class SideBar extends Component<ISideBarProps,{}> {
           </div>
           <div style={styles.column}>
             <ProviderList></ProviderList>
+          </div>
+          <div style={styles.column}>
+            <Dashboard></Dashboard>
           </div>
         </SwipeableViews>
       </div>

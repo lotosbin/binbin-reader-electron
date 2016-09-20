@@ -18,6 +18,28 @@ enum Readed{
 }
 class ArticleStorage extends Storage<IArticle> {
   Find({}:{}, callback: ISuccessCallback<IArticle[]>): void {
+    this.open().transaction((tx) => {
+      tx.executeSql(`SELECT * FROM ${ArticleTableName}`, [], (tx, results) => {
+        var d: IArticle[] = [];
+        for (var i = 0; i < results.rows.length; i++) {
+          d.push(results.rows.item(i))
+        }
+        callback(null, d)
+      }, (transaction, error) => {
+        callback(error)
+      });
+    });
+  }
+
+  FindAsync() {
+    return new Promise((resolve, reject) => {
+      this.Find({}, (error, results) => {
+        if (error)
+          reject(error)
+        else
+          resolve(results)
+      })
+    })
   }
 
   Add({title, link, feed_xmlurl}, callback: any) {

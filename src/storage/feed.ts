@@ -7,18 +7,14 @@ import {IFeed} from "../../definitions/storage/feed";
 import {Storage} from "./storagebase"
 class FeedStorage extends Storage<IFeed> {
   Init() {
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-
-    db.transaction((tx) => {
+    this.open().transaction((tx) => {
       tx.executeSql("CREATE TABLE IF NOT EXISTS FEEDS (id UNIQUE, title, xmlurl)");
       console.log("<p>created </p>");
     });
   }
 
   Add({title, xmlurl}, callback) {
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-
-    db.transaction((tx) => {
+    this.open().transaction((tx) => {
       tx.executeSql("INSERT INTO FEEDS (id, title,xmlurl) VALUES (? ,?,?)", [xmlurl, title, xmlurl], (transaction, results) => {
 
       }, (transation, error) => {
@@ -34,11 +30,13 @@ class FeedStorage extends Storage<IFeed> {
     });
   }
 
-  Find({}, callback: ISuccessCallback<IFeed[]>) {
-    let db = openDatabase("mydb", "1.0", "Test DB", 2 * 1024 * 1024);
-
-    db.transaction((tx) => {
-      tx.executeSql("SELECT * FROM FEEDS LIMIT 10", [], (tx, results) => {
+  Find({limit}, callback: ISuccessCallback<IFeed[]>) {
+    this.open().transaction((tx) => {
+      let sql = "SELECT * FROM FEEDS"
+      if (limit) {
+        sql = `${sql} LIMIT ${limit} `;
+      }
+      tx.executeSql(sql, [], (tx, results) => {
         var d: IFeed[] = [];
         for (var i = 0; i < results.rows.length; i++) {
           d.push(results.rows.item(i))
@@ -46,6 +44,17 @@ class FeedStorage extends Storage<IFeed> {
         if (callback)callback(null, d);
       }, null);
     });
+  }
+
+  FindAsync() {
+    return new Promise((resolve, reject) => {
+      this.Find({}, (error, results) => {
+        if (error)
+          reject(error)
+        else
+          resolve(results)
+      })
+    })
   }
 }
 let feedStorage = new FeedStorage();
