@@ -14,6 +14,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import emitter from "./functions/emitter";
+import feedService from "./services/feed"
 class Main extends React.Component<{},{}> {
   state = {
     currentTheme: getMuiTheme(lightBaseTheme)
@@ -32,6 +33,13 @@ class Main extends React.Component<{},{}> {
         })
       }
     });
+  }
+
+  componentDidMount() {
+    setInterval(() => {
+      feedService.UpdateFeedsArticles(() => {
+      })
+    }, 1000 * 30)
   }
 
   render() {

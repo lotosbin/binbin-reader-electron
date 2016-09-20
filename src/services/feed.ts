@@ -6,6 +6,7 @@ import * as jsonPath from "json-path";
 import articleStorage from "../storage/article";
 import feedStorage from "../storage/feed";
 import {ISuccessCallback} from "../storage/history";
+import {ICallback} from "../../definitions/common";
 class FeedService {
   async GrabAndUpdateArticles(xmlurl: string, callback: ISuccessCallback<any>) {
     let feed = await reader.parse(xmlurl)

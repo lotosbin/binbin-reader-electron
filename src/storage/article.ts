@@ -165,7 +165,7 @@ class ArticleStorage extends Storage<IArticle> {
   FindUnCalePromise(pversion: number, limit?: number) {
     return new Promise((resolve, reject) => {
       this.open().transaction(tx => {
-        let sql = `SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND p = 0 AND pversion < ? ORDER BY rowid DESC`
+        let sql = `SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND p = 0 AND pversion < ? ORDER BY pversion ASC ,rowid DESC`
         if (limit) {
           sql = `${sql} LIMIT ${limit}`;
         }
