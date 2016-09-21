@@ -48,7 +48,7 @@ class ArticleStorage extends Storage<IArticle> {
   }
 
   Add({title, link, feed_xmlurl}, callback: any) {
-    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion) VALUES (? ,?,?,?,?,0,0)`, [link, title, link, feed_xmlurl, Readed.Unread], (tx, results) => {
+    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion,update_time) VALUES (? ,?,?,?,?,0,0,?)`, [link, title, link, feed_xmlurl, Readed.Unread, Date()], (tx, results) => {
       emitter.emit(ArticleEvents.Added, {})
       callback(null, results)
     }, (tx, error) => {

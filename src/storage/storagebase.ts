@@ -24,6 +24,11 @@ export abstract class Storage<T> {
           tx.executeSql("DROP TABLE ARTICLES5")
         })
       }
+      if (this.db.version === "4") {
+        this.db.changeVersion("4", "5", tx => {
+          tx.executeSql("ALTER TABLE ARTICLES ADD COLUMN update_time")
+        })
+      }
     }
     return this.db;
   }

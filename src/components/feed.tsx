@@ -12,6 +12,7 @@ import feedService from "../services/feed";
 import {IArticle} from "../../definitions/storage/article";
 import {Divider} from "material-ui";
 import {Subheader} from "material-ui";
+import * as moment from "moment"
 export interface FeedListProps {
 
 }
@@ -97,7 +98,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
       <ListItem key={entry.id}
                 onClick={async ()=>await this.on_open_in_detail(entry)}
                 primaryText={entry.title}
-                secondaryText={entry.p.toString()}
+                secondaryText={`${moment(entry.update_time).fromNow()} ${entry.p.toString()}`}
       />
     );
   }
