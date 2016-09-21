@@ -9,16 +9,21 @@ import {Toolbar} from "material-ui";
 import {ToolbarGroup} from "material-ui";
 import {RaisedButton} from "material-ui";
 import feedService from "../services/feed";
+import {IArticle} from "../../definitions/storage/article";
+import {Divider} from "material-ui";
+import {Subheader} from "material-ui";
 export interface FeedListProps {
 
 }
 export interface FeedListState {
+  current: IFeed,
   progress: number,
   entries: IFeed[],
   slideIndex: number
 }
 export class FeedList extends React.Component<FeedListProps,{}> {
   state: FeedListState = {
+    current: null,
     progress: 0,
     entries: [],
     slideIndex: 0,
@@ -37,7 +42,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
     })
     setInterval(() => {
       articleStorage.CalcPrimary()
-    }, 1000 * 5); 
+    }, 1000 * 5);
   }
 
   private removeFromList(id: any) {
@@ -72,7 +77,6 @@ export class FeedList extends React.Component<FeedListProps,{}> {
   }
 
 
-
   async on_open_in_detail(entry: IFeed) {
     var index = this.state.entries.indexOf(entry)
     var readeds = this.state.entries.filter((v, i) => i < index);
@@ -81,6 +85,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
     });
     emitter.emit('mark_as_readed', readeds)
     emitter.emit('open_in_detail', entry)
+    this.setState({current: entry})
   }
 
   onRefresh() {
@@ -131,6 +136,10 @@ export class FeedList extends React.Component<FeedListProps,{}> {
           </ToolbarGroup>
         </Toolbar>
         <List>
+          <Subheader>Current</Subheader>
+          {this.state.current ? this.renderItem(this.state.current) : null}
+          <Divider />
+          <Subheader>Primary</Subheader>
           {this.state.entries.map((feed) => this.renderItem(feed))}
         </List>
       </div>
