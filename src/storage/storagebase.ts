@@ -17,6 +17,13 @@ export abstract class Storage<T> {
           tx.executeSql("ALTER TABLE ARTICLES6 RENAME TO ARTICLES")
         })
       }
+      if (this.db.version === "3") {
+        this.db.changeVersion("3", "4", tx => {
+          tx.executeSql("DROP TABLE ARTICLES2")
+          tx.executeSql("DROP TABLE ARTICLES4")
+          tx.executeSql("DROP TABLE ARTICLES5")
+        })
+      }
     }
     return this.db;
   }
