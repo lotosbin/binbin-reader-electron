@@ -48,7 +48,12 @@ class ArticleStorage extends Storage<IArticle> {
   }
 
   Add({title, link, feed_xmlurl}, callback: any) {
-    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion,update_time) VALUES (? ,?,?,?,?,0,0,?)`, [link, title, link, feed_xmlurl, Readed.Unread, Date()], (tx, results) => {
+    let segments: string[] = [];
+    if (title) {
+      segments = doSegment(title)
+      articleStorage.UpdateSegment(link, segments)
+    }
+    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion,update_time,segments) VALUES (? ,?,?,?,?,0,0,?,?)`, [link, title, link, feed_xmlurl, Readed.Unread, Date(), JSON.stringify(segments)], (tx, results) => {
       emitter.emit(ArticleEvents.Added, {})
       callback(null, results)
     }, (tx, error) => {
@@ -70,6 +75,17 @@ class ArticleStorage extends Storage<IArticle> {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 1 WHERE id=? `, [id], (transaction, results) => {
         this.incPVersion()
         emitter.emit("article_readed", id)
+        if (callback)callback(null)
+      }, (transation, error) => {
+        console.log(error);
+        if (callback)callback(error)
+      });
+    });
+  }
+
+  UpdateSegment(id, segments, callback) {
+    this.open().transaction((tx) => {
+      tx.executeSql(`UPDATE ${ArticleTableName} SET segments = ? WHERE id=? `, [JSON.stringify(segments), id], (transaction, results) => {
         if (callback)callback(null)
       }, (transation, error) => {
         console.log(error);
@@ -231,6 +247,18 @@ class ArticleStorage extends Storage<IArticle> {
     })
   }
 
+  MarkReadedCount() {
+    return new Promise((resolve, reject) => {
+      this.open().transaction((tx) => {
+        tx.executeSql(`SELECT * FROM ${ArticleTableName} WHERE readed = 2 `, [], (tx, results) => {
+          resolve(results.rows.length)
+        }, (transaction, error) => {
+          reject(error)
+        });
+      });
+    })
+  }
+
   ReadedSegmentCount(segment: string) {
     return new Promise((resolve, reject) => {
       this.open().transaction((tx) => {
@@ -243,30 +271,60 @@ class ArticleStorage extends Storage<IArticle> {
     })
   }
 
+  MarkReadedSegmentCount(segment: string) {
+    return new Promise((resolve, reject) => {
+      this.open().transaction((tx) => {
+        tx.executeSql(`SELECT * FROM ${ArticleTableName} WHERE readed = 2 AND title LIKE ?`, [`%${segment}%`], (tx, results) => {
+          resolve(results.rows.length)
+        }, (transaction, error) => {
+          reject(error)
+        });
+      });
+    })
+  }
+
   async calcP2(entry: IArticle): Promise<number> {
     /*
-     * p(C|M1...Mn)  = p(C) * p(C|M1)..p(C|Mn) / ( p(M1)..p(Mn) )
-     *               = count(C)/count(ALL) * count(C|M1)/count(M1)..count(C|Mn)/count(Mn) / ( count(M1)/count(ALL)..count(Mn)/count(ALL) )
-     *               = count(C)/count(ALL) * (count(C|M1)..count(C|Mn)/count(M1)..count(Mn)) / (count(M1)..count(Mn)/count(ALL)^n) 
-     *               = count(C)/count(ALL) * (count(C|M1)..count(C|Mn) * count(ALL)^n)/( count(M1)..count(Mn) ^2 )
-     *               = count(C)*count(ALL)^(n-1) * count(C|M1)..count(C|Mn) / (count(M1)..count(Mn))^2
-     * 
+     * p(C|F1F2..Fn)  = p(C) * p(F1F2..Fn|C) / p(F1F2..Fn)
+     *                = p(C) * p(F1|C)p(F2|C)..p(Fn|C) / p(F1F2..Fn)
+     *  
+     * p(C'|F1F2..Fn)  = p(C') * p(F1F2..Fn|C') / p(F1F2..Fn)
+     *                = p(C') * p(F1|C')p(F2|C')..p(Fn|C') / p(F1F2..Fn)
+     *                
+     * p  = p(C|F1F2..Fn) / p(C'|F1F2..Fn)
+     *    = (p(C) * p(F1|C)p(F2|C)..p(Fn|C) / p(F1F2..Fn)) / (p(C') * p(F1|C')p(F2|C')..p(Fn|C') / p(F1F2..Fn))
+     *    = (p(C) * p(F1|C)p(F2|C)..p(Fn|C)) / (p(C') * p(F1|C')p(F2|C')..p(Fn|C'))
+     *    = p(C)p(F1|C)p(F2|C)..p(Fn|C) / p(C')p(F1|C')p(F2|C')..p(Fn|C')
+     *    = (c(C)/c(A))(c(F1|C)/c(C))(c(F2|C)/c(C))..(c(Fn|C)/c(C)) / (c(C')/c(A))(c(F1|C')/c(C'))(c(F2|C')/c(C'))..(c(Fn|C')/c(C'))
+     *    = (c(C)/c(A))(c(F1|C)c(F2|C)..c(Fn|C)/c(C)^n) / (c(C')/c(A))(c(F1|C')c(F2|C')..(c(Fn|C')/c(C')^n)
+     *    = (c(C)c(F1|C)c(F2|C)..c(Fn|C)/(c(A)c(C)^n)) / (c(C')c(F1|C')c(F2|C')..c(Fn|C')/(c(A)c(C')^n))
+     *    = (c(C)c(F1|C)c(F2|C)..c(Fn|C)) / (c(C')c(F1|C')c(F2|C')..c(Fn|C')) * (c(A)c(C')^n)/(c(A)c(C)^n))
+     *    = c(C)/c(C') * (c(F1|C)c(F2|C)..c(Fn|C)) / (c(F1|C')c(F2|C')..c(Fn|C')) * (c(C')^n)/(c(C)^n))
+     *    = c(C)/c(C') * (c(F1|C)c(F2|C)..c(Fn|C)) / (c(F1|C')c(F2|C')..c(Fn|C')) * (c(C')/c(C))^n
+     *    = (c(F1|C)c(F2|C)..c(Fn|C)) / (c(F1|C')c(F2|C')..c(Fn|C')) * (c(C')/c(C))^(n-1)
      * */
-    var AllCount = await articleStorage.ReadedAndMarkReadedCount()
     var ReadCount = await articleStorage.ReadedCount()
+    var MarkReadCount = await articleStorage.MarkReadedCount()
     var up = 1
     var down = 1
-    let segments: string[] = doSegment(entry.title);
+    let segments: string[] = JSON.parse(entry.segments && "[]")
+    if (!segments.length) {
+      segments = doSegment(entry.title);
+    }
+    if (!segments.length) {
+      return 0;
+    }
+
     for (var i = 0; i < segments.length; i++) {
       var segment = segments[i];
       var SegmentReadCount = await articleStorage.ReadedSegmentCount(segment)
-      var SegmentCount = await articleStorage.ReadedAndMarkReadedSegmentCount(segment)
-      up = up * Math.max(1, parseInt(`${SegmentReadCount}`))
-      down = down * Math.max(1, parseInt(`${SegmentCount}`))
+      var SegmentMarkReadedCount = await articleStorage.MarkReadedSegmentCount(segment)
+      up = up * (parseInt(`${SegmentReadCount}`) + 1)
+      down = down * (parseInt(`${SegmentMarkReadedCount}`) + 1)
     }
-    let count_all = parseInt(`${AllCount}`);
     let count_readed = parseInt(`${ReadCount}`);
-    var pRead_Segments = count_readed * Math.pow(count_all, segments.length - 1) * up / Math.pow(down, 2)
+    let count_markreaded = parseInt(`${MarkReadCount}`);
+    var pRead_Segments = Math.pow((count_markreaded + 1) / (count_readed + 1), segments.length - 1) * up / down
     return pRead_Segments
   }
 
@@ -326,6 +384,8 @@ class ArticleStorage extends Storage<IArticle> {
         console.error(reason)
       })
   }
+
+
 }
 
 let articleStorage = new ArticleStorage();
