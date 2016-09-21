@@ -140,7 +140,7 @@ export class FeedList extends React.Component<FeedListProps,{}> {
           <Subheader>Current</Subheader>
           {this.state.current ? this.renderItem(this.state.current) : null}
           <Divider />
-          <Subheader>Primary</Subheader>
+          <Subheader>Priority</Subheader>
           {this.state.entries.map((feed) => this.renderItem(feed))}
         </List>
       </div>
