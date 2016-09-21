@@ -19,6 +19,7 @@ export class Dashboard extends React.Component<{},{}> {
   componentDidMount() {
     emitter.on(ArticleEvents.MarkReaded, () => this.loadData())
     emitter.on(ArticleEvents.MarkAdded, () => this.loadData())
+    emitter.on(ArticleEvents.PriorityUpdated, () => this.loadData())
     this.loadData();
   }
 

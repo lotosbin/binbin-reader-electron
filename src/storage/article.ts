@@ -19,6 +19,7 @@ enum Readed{
 export class ArticleEvents {
   static MarkReaded = "article_markreaded"
   static MarkAdded = "article_added"
+  static PriorityUpdated = "article_primary_updated"
 }
 class ArticleStorage extends Storage<IArticle> {
   Find({}:{}, callback: ISuccessCallback<IArticle[]>): void {
@@ -174,7 +175,7 @@ class ArticleStorage extends Storage<IArticle> {
   FindUnCalePromise(pversion: number, limit?: number) {
     return new Promise((resolve, reject) => {
       this.open().transaction(tx => {
-        let sql = `SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND p = 0 AND pversion < ? ORDER BY pversion ASC ,rowid DESC`
+        let sql = `SELECT * FROM ${ArticleTableName}  WHERE readed = 0 AND pversion < ? ORDER BY pversion ASC ,rowid DESC`
         if (limit) {
           sql = `${sql} LIMIT ${limit}`;
         }
@@ -301,6 +302,8 @@ class ArticleStorage extends Storage<IArticle> {
     console.log(`updateP(id:${id},p:${p},pversion:${pversion})`)
     this.open().transaction((tx) => {
       tx.executeSql(`UPDATE ${ArticleTableName} SET p=?,pversion=? WHERE id=? `, [p, pversion, id], (transaction, results) => {
+        emitter.emit(ArticleEvents.PriorityUpdated, {})
+        callback(null, results)
       }, (transation, error) => {
         if (callback) {
           if (error) {
