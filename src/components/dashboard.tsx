@@ -2,6 +2,8 @@ import * as React from "react";
 import {LinearProgress} from "material-ui";
 import feedStorage from "../storage/feed";
 import articleStorage from "../storage/article";
+import emitter from "../functions/emitter";
+import {ArticleEvents} from "../storage/article";
 /**
  * Created by liubinbin on 9/20/2016.
  */
@@ -15,6 +17,12 @@ export class Dashboard extends React.Component<{},{}> {
   }
 
   componentDidMount() {
+    emitter.on(ArticleEvents.MarkReaded, () => this.loadData())
+    emitter.on(ArticleEvents.MarkAdded, () => this.loadData())
+    this.loadData();
+  }
+
+  private loadData() {
     feedStorage.FindAsync()
       .then((feeds: any[]) => {
         this.setState({feedCount: feeds.length})

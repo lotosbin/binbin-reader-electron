@@ -16,6 +16,10 @@ enum Readed{
   Readed = 1,
   MarkReaded = 2,
 }
+export class ArticleEvents {
+  static MarkReaded = "article_markreaded"
+  static MarkAdded = "article_added"
+}
 class ArticleStorage extends Storage<IArticle> {
   Find({}:{}, callback: ISuccessCallback<IArticle[]>): void {
     this.open().transaction((tx) => {
@@ -43,7 +47,12 @@ class ArticleStorage extends Storage<IArticle> {
   }
 
   Add({title, link, feed_xmlurl}, callback: any) {
-    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion) VALUES (? ,?,?,?,?,0,0)`, [link, title, link, feed_xmlurl, Readed.Unread], callback);
+    this.executeSql(`INSERT INTO ${ArticleTableName}  (id, title,link,feed_xmlurl,readed,p,pversion) VALUES (? ,?,?,?,?,0,0)`, [link, title, link, feed_xmlurl, Readed.Unread], (tx, results) => {
+      emitter.emit(ArticleEvents.Added, {})
+      callback(null, results)
+    }, (tx, error) => {
+      callback(error)
+    });
   }
 
   AddAsync({title, link, feed_xmlurl}) {
@@ -73,7 +82,7 @@ class ArticleStorage extends Storage<IArticle> {
       tx.executeSql(`UPDATE ${ArticleTableName} SET readed = 2 WHERE id = ? `, [id], (transaction, results) => {
         console.log(`MarkUnreaded:${id}`)
         this.incPVersion()
-        emitter.emit("article_markreaded", id)
+        emitter.emit(ArticleEvents.MarkReaded, id)
         if (callback)callback(null)
       }, (transation, error) => {
         console.log(error);
@@ -234,7 +243,14 @@ class ArticleStorage extends Storage<IArticle> {
   }
 
   async calcP2(entry: IArticle): Promise<number> {
-    // pRead_Segment1..n = (Count(All)/Count(Read))^(n-1) * Count(Segment1|Read)..Count(Segment_n|Read) / (Count(Segment1)*..*Count(Segment_n))
+    /*
+     * p(C|M1...Mn)  = p(C) * p(C|M1)..p(C|Mn) / ( p(M1)..p(Mn) )
+     *               = count(C)/count(ALL) * count(C|M1)/count(M1)..count(C|Mn)/count(Mn) / ( count(M1)/count(ALL)..count(Mn)/count(ALL) )
+     *               = count(C)/count(ALL) * (count(C|M1)..count(C|Mn)/count(M1)..count(Mn)) / (count(M1)..count(Mn)/count(ALL)^n) 
+     *               = count(C)/count(ALL) * (count(C|M1)..count(C|Mn) * count(ALL)^n)/( count(M1)..count(Mn) ^2 )
+     *               = count(C)*count(ALL)^(n-1) * count(C|M1)..count(C|Mn) / (count(M1)..count(Mn))^2
+     * 
+     * */
     var AllCount = await articleStorage.ReadedAndMarkReadedCount()
     var ReadCount = await articleStorage.ReadedCount()
     var up = 1
@@ -247,7 +263,9 @@ class ArticleStorage extends Storage<IArticle> {
       up = up * Math.max(1, parseInt(`${SegmentReadCount}`))
       down = down * Math.max(1, parseInt(`${SegmentCount}`))
     }
-    var pRead_Segments = Math.pow(parseFloat(`${AllCount}`) / Math.max(1, parseFloat(`${ReadCount}`)), segments.length - 1) * up / down
+    let count_all = parseInt(`${AllCount}`);
+    let count_readed = parseInt(`${ReadCount}`);
+    var pRead_Segments = count_readed * Math.pow(count_all, segments.length - 1) * up / Math.pow(down, 2)
     return pRead_Segments
   }
 
