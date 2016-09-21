@@ -270,62 +270,19 @@ class ArticleStorage extends Storage<IArticle> {
     return pRead_Segments
   }
 
-  calcP(entry: IArticle): Promise<number> {
-    return new Promise((resolve) => {
-      let segments: string[] = doSegment(entry.title);
-      Promise.all(segments.map(segment => new Promise((resolve, reject) => this.calc(segment).then(pa => resolve(pa)))))
-        .then(values => {
-          var p = _.mean(values)
-          resolve(p)
-        })
-    })
-  }
-
-  async calc(segment: string) {
-    // pRead_Segment = pRead * pSegment1_Read *..* pSegment2_Read / pSegment1 *..* pSegment2
-    // pRead = ReadCount/AllCount
-    // pSegment1_Read = Segment1ReadCount / ReadCount
-    // pSegment1 = Segment1Count / AllCount
-    var AllCount = await articleStorage.ReadedAndMarkReadedCount()
-    var ReadCount = await articleStorage.ReadedCount()
-    var SegmentCount = await articleStorage.ReadedAndMarkReadedSegmentCount(segment)
-    var SegmentReadCount = await articleStorage.ReadedSegmentCount(segment)
-    var pRead = parseFloat(`${ReadCount}`) / parseFloat(`${AllCount}`)
-    var pSegment_Read = parseFloat(`${SegmentReadCount}`) / parseFloat(`${ReadCount}`)
-    var pSegment = parseFloat(`${SegmentCount}`) / parseFloat(`${AllCount}`)
-    var pRead_Segment = pRead * pSegment_Read / pSegment
-    console.log(`${segment}:AllCount:${AllCount},ReadCount:${ReadCount},pRead:${pRead},pRead_Segment:${pSegment_Read}`)
-    return pRead;
-  }
-
-  updateP(id: string, p: number, pversion: number, callback: any) {
-    console.log(`updateP(id:${id},p:${p},pversion:${pversion})`)
-    this.open().transaction((tx) => {
-      tx.executeSql(`UPDATE ${ArticleTableName} SET p=?,pversion=? WHERE id=? `, [p, pversion, id], (transaction, results) => {
-        emitter.emit(ArticleEvents.PriorityUpdated, {})
-        callback(null, results)
-      }, (transation, error) => {
-        if (callback) {
-          if (error) {
-            callback(error)
-          }
-          else {
-            callback(null)
-          }
-        }
-      });
-    });
-  }
-
-  updatePPromise(id: string, p: number, pversion: number) {
+  updatePriorityPromise(id: string, p: number, pversion: number) {
     return new Promise((resolve, reject) => {
-      this.updateP(id, p, pversion, (error) => {
-          if (error)
-            reject(error)
-          else
-            resolve({})
-        }
-      )
+      console.log(`updateP(id:${id},p:${p},pversion:${pversion})`)
+      this.open()
+        .transaction((tx) => {
+          tx.executeSql(`UPDATE ${ArticleTableName} SET p=?,pversion=? WHERE id=? `, [p, pversion, id],
+            (transaction, results) => {
+              emitter.emit(ArticleEvents.PriorityUpdated, {})
+              resolve(results)
+            },
+            (transation, error) => reject(error)
+          );
+        });
     })
   }
 
@@ -356,7 +313,7 @@ class ArticleStorage extends Storage<IArticle> {
           var article = articles[i];
           this.calcP2(article)
             .then((p: number) => {
-              return this.updatePPromise(article.id, p, pversion)
+              return this.updatePriorityPromise(article.id, p, pversion)
             })
             .catch((reason: any) => {
               console.error(reason)
