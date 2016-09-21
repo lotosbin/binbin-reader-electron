@@ -142,6 +142,11 @@ export class FeedList extends React.Component<FeedListProps,{}> {
           <Divider />
           <Subheader>Priority</Subheader>
           {this.state.entries.map((feed) => this.renderItem(feed))}
+          <Divider />
+          <ListItem
+            onClick={ ()=> this.onMarkReaded()}
+            primaryText="Mark Readed(this page)"
+          />
         </List>
       </div>
     );
