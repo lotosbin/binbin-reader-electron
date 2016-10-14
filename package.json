@@ -27,7 +27,11 @@
       "iconUrl": "(windows-only) https link to icon"
     }
   },
+  "dependencies": {
+    "electron": "^1.4.3"
+  },
   "devDependencies": {
+    "electron": "^1.4.3",
     "electron-builder": "^7.11.4"
   }
 }
