@@ -152,4 +152,3 @@ export class FeedList extends React.Component<FeedListProps,{}> {
     );
   }
 }
-export default feed
