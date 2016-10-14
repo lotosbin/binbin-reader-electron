@@ -45,6 +45,7 @@
   "devDependencies": {
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",
+    "electron-prebuilt": "^1.4.3",
     "electron-rebuild": "^1.2.1",
     "eslint": "^3.7.1",
     "gulp": "^3.9.1",
