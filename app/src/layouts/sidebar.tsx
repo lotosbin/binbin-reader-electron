@@ -43,7 +43,6 @@ export class SideBar extends Component<ISideBarProps,{}> {
           value={this.state.slideIndex}
         >
           <Tab label="Unread" value={0}/>
-          <Tab label="History" value={1}/>
           <Tab label="Provider" value={2}/>
           <Tab label="Dashboard" value={3}/>
         </Tabs>
@@ -53,9 +52,6 @@ export class SideBar extends Component<ISideBarProps,{}> {
         >
           <div style={styles.column}>
             <FeedList></FeedList>
-          </div>
-          <div style={styles.column}>
-            <HistoryList></HistoryList>
           </div>
           <div style={styles.column}>
             <ProviderList></ProviderList>
