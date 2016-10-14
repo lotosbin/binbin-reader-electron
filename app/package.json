@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/lotosbin/binbin-reader-electron#readme",
   "dependencies": {
-    "electron": "^1.4.3",
     "electron-open-link-in-browser": "^1.0.2",
     "feed-reader": "^1.1.16",
     "inline-style-prefixer": "^2.0.4",
@@ -43,6 +42,7 @@
     "segment": "^0.1.3"
   },
   "devDependencies": {
+    "electron": "^1.4.3",
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",
     "electron-prebuilt": "^1.4.3",
